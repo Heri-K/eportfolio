@@ -20,6 +20,10 @@ public class Portfolio {
 				case "buy":
 					here.buyStuff(here, keyboard, stonks, mutualFunds);
 					break;
+				case "s":
+				case "sell":
+					here.sellStuff(here, keyboard, stonks, mutualFunds);
+					break;
 				default:
 					System.out.println("Invalid command, try again.");
 					break;
@@ -28,18 +32,12 @@ public class Portfolio {
 		keyboard.close();
 	}
 
+	
 	/*********************************************************************************/	
-
-	/**
-	 * descriptions of the thing
-	 * @param here	local class references
-	 * @param keyboard	scanner object
-	 * @param stonks	arraylist of stonks
-	 * @param mutualFunds	arraylist of mutual funds
-	 */
+	
 	public void buyStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
-			ArrayList<MutualFund> mutualFunds) {// validatiot for buying stuff
-		System.out.println("Enter the kind of investment(stock or mutualfund), followed by the symbol:");
+	ArrayList<MutualFund> mutualFunds) {// validatiot for buying stuff
+		System.out.println("Enter the kind of investment(stock or mutualfund), followed by the symbol (Eg. Stock APPL):");
 		String invType = keyboard.nextLine();
 		String[] split = new String[2];
 		split = invType.split("[ ]+");
@@ -72,9 +70,9 @@ public class Portfolio {
 			break;
 		}
 		if (split[0].equalsIgnoreCase("stock"))
-			here.buyInvStock(stonks, keyboard, split[1]);
+		here.buyInvStock(stonks, keyboard, split[1]);
 		else if (split[0].equalsIgnoreCase("mutualfund"))
-			here.buyInvMF(mutualFunds, keyboard, split[1]);
+		here.buyInvMF(mutualFunds, keyboard, split[1]);
 	}
 
 	private void buyInvStock(ArrayList<Stock> stonks, Scanner keyboard, String symbol) {
@@ -103,6 +101,8 @@ public class Portfolio {
 		for (Stock stock : stonks) {
 			if (symbol.equalsIgnoreCase(stock.getSymbol())) {
 				stonks.add(new Stock(quantity, price));
+				System.out.println("Bought " + symbol + " " + stock.getName() + ": " + 
+				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", stock.getBookValue()));
 				return;
 			}
 		}
@@ -116,6 +116,8 @@ public class Portfolio {
 			break;
 		}
 		stonks.add(new Stock(symbol, stockName, quantity, price));
+		System.out.println("Bought " + symbol + " " + stockName + ": " + 
+		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity + 9.99)));
 	}
 
 	private void buyInvMF(ArrayList<MutualFund> mutualFunds, Scanner keyboard, String symbol) {
@@ -144,18 +146,129 @@ public class Portfolio {
 		for (MutualFund mFund: mutualFunds) {
 			if (symbol.equalsIgnoreCase(mFund.getSymbol())) {
 				mutualFunds.add(new MutualFund(quantity, price));
+				System.out.println("Bought " + symbol + " " + mFund.getName() + ": " + 
+				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", mFund.getBookValue()));
 				return;
 			}
 		}
 		System.out.println("Enter the name of the mutual fund:");
-		String stockName = keyboard.nextLine();
+		String mFundName = keyboard.nextLine();
 		while(true){
-			if (stockName.isBlank() || stockName.isEmpty()){
+			if (mFundName.isBlank() || mFundName.isEmpty()){
 				System.out.println("Invalid name, try again.");
-				stockName = keyboard.nextLine();
+				mFundName = keyboard.nextLine();
 			}
 			break;
 		}
-		mutualFunds.add(new MutualFund(symbol, stockName, quantity, price));
+		mutualFunds.add(new MutualFund(symbol, mFundName, quantity, price));
+		System.out.println("Bought " + symbol + " " + mFundName + ": " + 
+		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity)));
 	}
+	
+	private void sellStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
+	ArrayList<MutualFund> mutualFunds){
+		System.out.println("Enter the symbol:");
+		String symbol = keyboard.nextLine();
+		
+		int quantity;
+		float price, gain, payment;
+		while(true){	//getting symbol
+			if(symbol.isEmpty() || symbol.isBlank()){
+				System.out.println("Invalid input, try again.");
+				symbol = keyboard.nextLine();
+				continue;
+			}
+			break;
+		}
+		symbol = symbol.strip().toLowerCase();
+		for (Stock stock: stonks) {
+			if (symbol.equalsIgnoreCase(stock.getSymbol())){
+				System.out.println("Enter the quantity of " + symbol + " to sell: ");
+				while (true) {	//getting appropriate quantity
+					try {	//quanity as integer, not string
+						quantity = Integer.parseInt(keyboard.nextLine());
+					} catch (Exception e) {
+						System.out.println("Invalid value, try again.");
+						continue;
+					}
+					if (quantity > stock.getQuantity() || quantity <= 0){ //proper range
+						System.out.println("Value outside the range, try again;");
+						continue;
+					}
+					break;
+				}
+				System.out.println("Enter the price:");
+				while (true) {	//getting price
+					try {	//price as float, not string
+						price = Float.parseFloat(keyboard.nextLine());
+					} catch (Exception e) {
+						System.out.println("Invalid price, try again.");
+						continue;
+					}
+					break;
+				}
+				payment = (price * quantity) - (float)9.99;
+				gain = payment - stock.getBookValue();
+				System.out.println("Successfully sold " + quantity + " of " + symbol + " " + stock.getName() + " for " + price + "each.");
+				System.out.println("Total payment: $" + payment + ", with net gain of $" + gain + ".");
+				if (stock.getQuantity() == 0){
+					stonks.remove(stock);
+					return;
+				}
+				stock.setPrice(price);
+				stock.sellBookValue(stock.getQuantity() - quantity);
+				System.out.println("Current status of " + symbol + " " + stock.getName() + ": \n" + 
+					"\tQuantity: " + quantity + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f",stock.getBookValue()));
+			}
+			return;
+		}
+		for (MutualFund mFund : mutualFunds) {
+			if (symbol.equalsIgnoreCase(mFund.getSymbol())) {
+				if (mFund.equals(symbol)){
+					System.out.println("Enter the quantity of " + symbol + " to sell: ");
+					while (true) {	//getting appropriate quantity
+						try {	//quanity as integer, not string
+							quantity = Integer.parseInt(keyboard.nextLine());
+						} catch (Exception e) {
+							System.out.println("Invalid value, try again.");
+							continue;
+						}
+						if (quantity > mFund.getQuantity() || quantity <= 0){ //proper range
+							System.out.println("Value outside the range, try again;");
+							continue;
+						}
+						break;
+					}
+					System.out.println("Enter the price:");
+					while (true) {	//getting price
+						try {	//price as float, not string
+							price = Float.parseFloat(keyboard.nextLine());
+						} catch (Exception e) {
+							System.out.println("Invalid price, try again.");
+							continue;
+						}
+						break;
+					}
+					payment = (price * quantity) - 45;
+					gain = payment - mFund.getBookValue();
+					System.out.println("Successfully sold " + quantity + " of " + symbol + " " + mFund.getName() + " for " + price + " each.");
+					System.out.println("Total payment: $" + payment + ", with net gain of $" + gain + ".");
+					if (mFund.getQuantity() == 0){
+						mutualFunds.remove(mFund);
+						return;
+					}
+					mFund.setPrice(price);
+					mFund.sellBookValue(mFund.getQuantity() - quantity);
+					System.out.println("Current status of " + symbol + " " + mFund.getName() + ": \n" + 
+						"\tQuantity: " + quantity + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f", mFund.getBookValue()));
+				}
+			}
+			return;
+		}
+		System.out.println("No stock nor mutual fund with symbol " + symbol + " was found. Cannot sell.");
+		return;
+	}
+
 }
+
+	
