@@ -4,51 +4,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Portfolio {
-	public static void main(String argv[]) {
-		Portfolio here = new Portfolio();
-		ArrayList<Stock> stonks = new ArrayList<Stock>();
-		ArrayList<MutualFund> mutualFunds = new ArrayList<MutualFund>();
+	private ArrayList<Stock> stonks;
+	private ArrayList<MutualFund> mutualFunds;
 
-		Scanner keyboard = new Scanner(System.in);
-		String command = new String();
-		while (!command.strip().equalsIgnoreCase("quit") && !command.strip().equalsIgnoreCase("q")) {
-			System.out.print("Enter the command (available commands are buy, sell, update, getGain, search, quit):");
-			command = keyboard.nextLine();
-
-			switch(command.toLowerCase().strip()){
-				case "b":
-				case "buy":
-					here.buyStuff(here, keyboard, stonks, mutualFunds);
-					break;
-				case "s":
-				case "sell":
-					here.sellStuff(here, keyboard, stonks, mutualFunds);
-					break;
-				case "u":
-				case "update":
-					here.update(keyboard, stonks, mutualFunds);
-					break;
-				case "g":
-				case "gg":
-				case "getgain":
-					here.getGain(here, keyboard, stonks, mutualFunds);
-					break;
-				case "q":
-				case "quit":
-					System.out.println("Exiting...");
-					break;
-				default:
-					System.out.println("Invalid command, try again.");
-					break;
-			}
-		}
-		keyboard.close();
+	public Portfolio(){
+		stonks = new ArrayList<Stock>();
+		mutualFunds = new ArrayList<MutualFund>();
 	}
 
-	/*********************************************************************************/	
-	
-	public void buyStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
-	ArrayList<MutualFund> mutualFunds) {// validatiot for buying stuff
+	public void buy(Scanner keyboard) {// validatiot for buying stuff
 		System.out.println("Enter the kind of investment(stock or mutualfund), followed by the symbol (Eg. Stock APPL):");
 		String invType = keyboard.nextLine();
 		String[] split = new String[2];
@@ -82,12 +46,12 @@ public class Portfolio {
 			break;
 		}
 		if (split[0].equalsIgnoreCase("stock"))
-		here.buyInvStock(stonks, keyboard, split[1]);
+			buyInvStoc(keyboard, split[1]);
 		else if (split[0].equalsIgnoreCase("mutualfund"))
-		here.buyInvMF(mutualFunds, keyboard, split[1]);
+			buyInvMF(keyboard, split[1]);
 	}
 
-	public void buyInvStock(ArrayList<Stock> stonks, Scanner keyboard, String symbol) {
+	public void buyInvStoc(Scanner keyboard, String symbol) {
 		int quantity;
 		System.out.println("Enter the quantity of stock to buy:");
 		while(true){
@@ -132,7 +96,7 @@ public class Portfolio {
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity + 9.99)));
 	}
 
-	public void buyInvMF(ArrayList<MutualFund> mutualFunds, Scanner keyboard, String symbol) {
+	public void buyInvMF(Scanner keyboard, String symbol) {
 		int quantity;
 		System.out.println("Enter the quantity of Mutual Fund to buy:");
 		while(true){
@@ -177,8 +141,7 @@ public class Portfolio {
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity)));
 	}
 	
-	public void sellStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
-	ArrayList<MutualFund> mutualFunds){
+	public void sell(Scanner keyboard){
 		System.out.println("Enter the symbol:");
 		String symbol = keyboard.nextLine();
 		
@@ -281,7 +244,7 @@ public class Portfolio {
 		return;
 	}
 
-	public void update(Scanner keyboard, ArrayList<Stock> stonks, ArrayList<MutualFund> mutualFunds) {
+	public void update(Scanner keyboard) {
 		boolean found = false;
 		for (Stock stock : stonks) {
 			found = true;
@@ -323,7 +286,7 @@ public class Portfolio {
 		}
 	}
 
-	public void getGain(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks, ArrayList<MutualFund> mutualFunds) {
+	public void getGain(Scanner keyboard) {
 		float gain = 0;
 		boolean found = false;
 		for (Stock stock : stonks) {
@@ -344,7 +307,9 @@ public class Portfolio {
 		}
 	}
 
-
+	public void search(Scanner keyboard) {
+		
+	}
 }
 
 	
