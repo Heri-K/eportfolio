@@ -308,7 +308,152 @@ public class Portfolio {
 	}
 
 	public void search(Scanner keyboard) {
+		boolean symbolExists = true;
+		boolean nameExists = true;
+		boolean priceRangeExists = true;
+		boolean foundAtLeastOne = false;
+		//TODO test all 8 possibilites
+		//todo lare -small
+		System.out.println("Enter a (case-insenstitive) symbol to search for: ");
+		String symbol = keyboard.nextLine();
+		if (symbol.isBlank() || symbol.isEmpty())
+			symbolExists = false;
 		
+		System.out.println("Enter a (case-insensitive) name to search for: ");
+		String name = keyboard.nextLine();
+		if (name.isEmpty() || name.isBlank())
+			nameExists = false; 
+		String[] nameSplit = name.split("[ ]+");
+
+		System.out.println("Enter the range of prices to search for: ");
+		float lowerBound = Float.NEGATIVE_INFINITY;
+		float upperBound = Float.POSITIVE_INFINITY;
+		while(true){
+			String priceRangeRaw = keyboard.nextLine();
+			int dashIndex;
+			priceRangeRaw = priceRangeRaw.strip();
+			if (priceRangeRaw.isBlank() || priceRangeRaw.isEmpty()){
+				priceRangeExists = false;
+				break;
+			}
+			//if there is no dash, then only precise input
+			dashIndex = priceRangeRaw.indexOf("-");
+			if (dashIndex == -1){	//exact value == lowerbound = upperbound
+				try {
+					lowerBound = Float.parseFloat(priceRangeRaw);	
+				} catch (Exception e) {		//TODO fix
+					System.out.println("Invalid price input, try again.");
+					continue;
+				}
+				upperBound = lowerBound;
+				break;
+			}
+			//dash exists
+			if (dashIndex == 0){	//change upper bound only, lower bound is still neg inf
+				try {
+					upperBound = Float.parseFloat(priceRangeRaw.substring(1, priceRangeRaw.length()-1));
+					
+				} catch (Exception e) {
+					System.out.println("Invalid upper bound, try again.");
+					continue;
+				}
+			}
+			else if (dashIndex == (priceRangeRaw.length()-1)){
+				try {
+					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex-1));
+				} catch (Exception e) {
+					System.out.println("Invalid lower bound, try again.");
+					continue;
+				}
+			}
+			else{
+				try {
+					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex-1));
+					upperBound = Float.parseFloat(priceRangeRaw.substring(dashIndex+1, priceRangeRaw.length()-1));
+				} catch (Exception e) {
+					System.out.println("Invalid bounds, try again.");
+					continue;
+				}
+			}
+			break;
+			
+		}
+		
+		for (Stock stock : stonks) {
+			if (symbolExists){
+				if (!symbol.equals(stock.getSymbol())){
+					continue;
+				}
+			}
+			if (nameExists) {
+				String[] stockNameSplit = stock.getName().split("[ ]+");
+				boolean match = true;
+				for (String itemString : nameSplit) {
+					boolean found = false;
+					for (String string : stockNameSplit) {
+						if(itemString.equalsIgnoreCase(string)){
+							found = true;
+							break;
+						}
+					}
+					if (!found){
+						match = false;
+						break;
+					}
+				}
+				if (!match){
+					continue;
+				}
+			}
+			if (priceRangeExists){
+				if (Float.compare(stock.getPrice(), upperBound) == 1 || Float.compare(stock.getPrice(), lowerBound) == -1){
+					continue;
+				}
+			}
+			foundAtLeastOne = true;
+			System.out.println("Stock found matching \"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + "\": ");
+			System.out.println(stock.toString());
+		}
+		for (MutualFund mFund : mutualFunds) {
+			if (symbolExists){
+				if (!symbol.equals(mFund.getSymbol())){
+					continue;
+				}
+			}
+			if (nameExists) {
+				String[] stockNameSplit = mFund.getName().split("[ ]+");
+				boolean match = true;
+				for (String itemString : nameSplit) {
+					boolean found = false;
+					for (String string : stockNameSplit) {
+						if(itemString.equalsIgnoreCase(string)){
+							found = true;
+							break;
+						}
+					}
+					if (!found){
+						match = false;
+						break;
+					}
+				}
+				if (!match){
+					continue;
+				}
+			}
+			if (priceRangeExists){
+				if (Float.compare(mFund.getPrice(), upperBound) == 1 || Float.compare(mFund.getPrice(), lowerBound) == -1){
+					continue;
+				}
+			}
+			foundAtLeastOne = true;
+			System.out.println("Mutual Fund found matching \"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + ": ");
+			System.out.println(mFund.toString());
+		}
+		
+		if (!foundAtLeastOne){
+			System.out.println(" No matches found for:\"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + "\".");
+		}
+
 	}
 }
 
