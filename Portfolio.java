@@ -26,10 +26,16 @@ public class Portfolio {
 					break;
 				case "u":
 				case "update":
-					here.update(here, keyboard, stonks, mutualFunds);
+					here.update(keyboard, stonks, mutualFunds);
+					break;
+				case "g":
+				case "gg":
+				case "getgain":
+					here.getGain(here, keyboard, stonks, mutualFunds);
 					break;
 				case "q":
 				case "quit":
+					System.out.println("Exiting...");
 					break;
 				default:
 					System.out.println("Invalid command, try again.");
@@ -275,7 +281,7 @@ public class Portfolio {
 		return;
 	}
 
-	private void update(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks, ArrayList<MutualFund> mutualFunds) {
+	public void update(Scanner keyboard, ArrayList<Stock> stonks, ArrayList<MutualFund> mutualFunds) {
 		boolean found = false;
 		for (Stock stock : stonks) {
 			found = true;
@@ -317,7 +323,28 @@ public class Portfolio {
 		}
 	}
 
-	
+	public void getGain(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks, ArrayList<MutualFund> mutualFunds) {
+		float gain = 0;
+		boolean found = false;
+		for (Stock stock : stonks) {
+			found = true;
+			float tempGain = stock.getPrice() * stock.getQuantity() - (float)9.99 - stock.getBookValue();
+			System.out.println("Gain for " + stock.getSymbol() + " " + stock.getName() + " is $" + String.format("%.2f",tempGain) + ".");
+			gain += tempGain; 
+		}
+		for (MutualFund mFund : mutualFunds) {
+			found = true;
+			float tempGain = mFund.getPrice() * mFund.getQuantity() - 45 - mFund.getBookValue();
+			System.out.println("Gain for " + mFund.getSymbol() + " " + mFund.getName() + " is $" + String.format("%.2f",tempGain) + ".");
+			gain += tempGain; 
+		}
+		System.out.println("Overall gain: $" + String.format("%.2f", gain));
+		if (!found){
+			System.out.println("No stock of mutual fund has been purchased. Cannot get gains.");
+		}
+	}
+
+
 }
 
 	
