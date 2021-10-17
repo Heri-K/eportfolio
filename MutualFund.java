@@ -5,8 +5,15 @@ public class MutualFund {
 	private String symbol;
 	private int quantity;
 	private float price;
-	private float bookValue;
+	private float bookValue = 0;
 
+	public MutualFund(int quantity, float price) {
+		this.quantity = quantity;
+		this.price = price;
+		setBookValue(quantity, price);
+	}
+	public MutualFund(String symbol, String stockName, int quantity, float price) {
+	}
 	//accessors
 	public String getName(){
 		return name;
@@ -36,5 +43,13 @@ public class MutualFund {
 	}
 	public void setPrice(float price){
 		this.price = price;
+	}
+
+	public void setBookValue(int quantity, float price){
+		this.bookValue += (quantity * price);
+	}
+
+	public String toString(){
+		return "Investment: " + symbol + "\nName: " + name + "\nPrice: " + price + "\nQuantity: " + quantity + "\nBook value: " + bookValue;
 	}
 }
