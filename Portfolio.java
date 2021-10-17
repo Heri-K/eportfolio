@@ -11,8 +11,8 @@ public class Portfolio {
 
 		Scanner keyboard = new Scanner(System.in);
 		String command = new String();
-		while (!command.equalsIgnoreCase("quit") && !command.equalsIgnoreCase("q")) {
-			System.out.print("Enter the command (available commands are buy, sell, getGain, search, quit):");
+		while (!command.strip().equalsIgnoreCase("quit") && !command.strip().equalsIgnoreCase("q")) {
+			System.out.print("Enter the command (available commands are buy, sell, update, getGain, search, quit):");
 			command = keyboard.nextLine();
 
 			switch(command.toLowerCase().strip()){
@@ -24,6 +24,13 @@ public class Portfolio {
 				case "sell":
 					here.sellStuff(here, keyboard, stonks, mutualFunds);
 					break;
+				case "u":
+				case "update":
+					here.update(here, keyboard, stonks, mutualFunds);
+					break;
+				case "q":
+				case "quit":
+					break;
 				default:
 					System.out.println("Invalid command, try again.");
 					break;
@@ -32,7 +39,6 @@ public class Portfolio {
 		keyboard.close();
 	}
 
-	
 	/*********************************************************************************/	
 	
 	public void buyStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
@@ -75,7 +81,7 @@ public class Portfolio {
 		here.buyInvMF(mutualFunds, keyboard, split[1]);
 	}
 
-	private void buyInvStock(ArrayList<Stock> stonks, Scanner keyboard, String symbol) {
+	public void buyInvStock(ArrayList<Stock> stonks, Scanner keyboard, String symbol) {
 		int quantity;
 		System.out.println("Enter the quantity of stock to buy:");
 		while(true){
@@ -120,7 +126,7 @@ public class Portfolio {
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity + 9.99)));
 	}
 
-	private void buyInvMF(ArrayList<MutualFund> mutualFunds, Scanner keyboard, String symbol) {
+	public void buyInvMF(ArrayList<MutualFund> mutualFunds, Scanner keyboard, String symbol) {
 		int quantity;
 		System.out.println("Enter the quantity of Mutual Fund to buy:");
 		while(true){
@@ -165,7 +171,7 @@ public class Portfolio {
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity)));
 	}
 	
-	private void sellStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
+	public void sellStuff(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks,
 	ArrayList<MutualFund> mutualFunds){
 		System.out.println("Enter the symbol:");
 		String symbol = keyboard.nextLine();
@@ -269,6 +275,49 @@ public class Portfolio {
 		return;
 	}
 
+	private void update(Portfolio here, Scanner keyboard, ArrayList<Stock> stonks, ArrayList<MutualFund> mutualFunds) {
+		boolean found = false;
+		for (Stock stock : stonks) {
+			found = true;
+			System.out.println("Current price of " + stock.getSymbol() + " " + stock.getName() + " is $" + 
+			String.format("%.2f", stock.getPrice()) + ".\n" + "Enter the new price: ");
+			float price;
+			while(true){	//getting valid price
+				try {
+					price = Float.parseFloat(keyboard.nextLine());
+				} catch (Exception e) {
+					System.out.println("Invalid price, try again.");
+					continue;
+				}
+				break;
+			}
+			stock.setPrice(price);
+			System.out.println("Updated " + stock.toString());
+		}
+		for (MutualFund mFund : mutualFunds) {
+			found = true;
+			System.out.println("Current price of " + mFund.getSymbol() + " " + mFund.getName() + " is $" + 
+			String.format("%.2f", mFund.getPrice()) + ".\n" + "Enter the new price: ");
+			float price;
+			while(true){	//getting valid price
+				try {
+					price = Float.parseFloat(keyboard.nextLine());
+				} catch (Exception e) {
+					System.out.println("Invalid price, try again.");
+					continue;
+				}
+				break;
+			}
+			mFund.setPrice(price);
+			System.out.println("Updated " + mFund.toString());
+		}
+		
+		if (!found){
+			System.out.println("No stock of mutual fund has been purchased. Cannot update prices.");
+		}
+	}
+
+	
 }
 
 	
