@@ -7,6 +7,27 @@ public class Stock {
 	private float price;
 	private float bookValue = 0;	//how much to own a stock
 
+	//constructors
+	public Stock(){
+		name = "NaN";
+		symbol = "NaN";
+		quantity = 0;
+		price = 0;
+		bookValue = 0;
+	}
+	public Stock(int quantity, float price){
+		this.quantity = quantity;
+		this.price = price;
+		setBookValue(price, quantity);
+	}
+	public Stock(String symbol, String name, int quantity, float price){
+		this.name = name;
+		this.symbol = symbol;
+		this.quantity = quantity;
+		this.price = price;
+		setBookValue(price, quantity);
+	}
+	
 	//accessors
 	public String getName(){
 		return name;
@@ -41,27 +62,6 @@ public class Stock {
 		this.bookValue += (price * quantity + 9.99);
 	}
 
-	//constructors
-	public Stock(){
-		name = "NaN";
-		symbol = "NaN";
-		quantity = 0;
-		price = 0;
-		bookValue = 0;
-	}
-	public Stock(int quantity, float price){
-		this.quantity = quantity;
-		this.price = price;
-		setBookValue(price, quantity);
-	}
-	public Stock(String symbol, String name, int quantity, float price){
-		this.name = name;
-		this.symbol = symbol;
-		this.quantity = quantity;
-		this.price = price;
-		setBookValue(price, quantity);
-	}
-	
 	//equals
 	public boolean equals(String name, String symbol, int quantity, float price, float bookValue){
 		return 	name.equals(this.name) &&

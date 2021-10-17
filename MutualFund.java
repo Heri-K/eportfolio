@@ -7,7 +7,26 @@ public class MutualFund {
 	private float price;
 	private float bookValue = 0;
 
-
+	//constructors
+	public MutualFund(){
+		name = "NaN";
+		symbol = "NaN";
+		quantity = 0;
+		price = 0;
+		bookValue = 0;
+	}
+	public MutualFund(int quantity, float price) {
+		this.quantity = quantity;
+		this.price = price;
+		setBookValue(quantity, price);
+	}
+	public MutualFund(String symbol, String name, int quantity, float price) {
+		this.name = name;
+		this.symbol = symbol;
+		this.quantity = quantity;
+		this.price = price;
+		setBookValue(quantity, price);
+	}
 	
 	//accessors
 	public String getName(){
@@ -43,27 +62,6 @@ public class MutualFund {
 		this.bookValue += (quantity * price);
 	}
 	
-	//constructors
-	public MutualFund(){
-		name = "NaN";
-		symbol = "NaN";
-		quantity = 0;
-		price = 0;
-		bookValue = 0;
-	}
-	public MutualFund(int quantity, float price) {
-		this.quantity = quantity;
-		this.price = price;
-		setBookValue(quantity, price);
-	}
-	public MutualFund(String symbol, String name, int quantity, float price) {
-		this.name = name;
-		this.symbol = symbol;
-		this.quantity = quantity;
-		this.price = price;
-		setBookValue(quantity, price);
-	}
-
 	public String toString(){
 		return "Investment: " + symbol + "\nName: " + name + "\nPrice: " + price + "\nQuantity: " + quantity + "\nBook value: " + bookValue;
 	}
