@@ -8,7 +8,7 @@ public class Main {
 		Scanner keyboard = new Scanner(System.in);
 		String command = new String();
 		while (!command.strip().equalsIgnoreCase("quit") && !command.strip().equalsIgnoreCase("q")) {
-			System.out.print("Enter the command (available commands are buy, sell, update, getGain, search, quit):");
+			System.out.print("Enter the command (available commands are buy, sell, update, getGain, search, quit): ");
 			command = keyboard.nextLine();
 
 			switch(command.toLowerCase().strip()){
