@@ -2,6 +2,12 @@ package ukaparyk_a1.eportfolio;
 import java.util.Scanner;
 
 public class Main {
+	/**
+	 * Main. calls for a menu, goes until "quit" or "q" is entered. Initializes portfolio instance, and scanner instance. 
+	 * Possible commands for the menu are displayed in the form of "command (short form of the command als accepted)": 
+	 * "buy (b)", "sell (s)", "update (u)", "getGain (g) (gg)", "search (sr)", "printAll (print) (p)", "quit (q)"
+	 * @param argv
+	 */
 	public static void main(String argv[]) {
 		Portfolio portfolio = new Portfolio();
 
@@ -27,11 +33,16 @@ public class Main {
 				case "g":
 				case "gg":
 				case "getgain":
-					portfolio.getGain(keyboard);
+					portfolio.getGain();
 					break;
 				case "sr":
 				case "search":
 					portfolio.search(keyboard);
+					break;
+				case "p":
+				case "print":
+				case "printall":
+					portfolio.printAll();
 					break;
 				case "q":
 				case "quit":

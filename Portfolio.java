@@ -6,12 +6,18 @@ import java.util.Scanner;
 public class Portfolio {
 	private ArrayList<Stock> stonks;
 	private ArrayList<MutualFund> mutualFunds;
-
+	/**
+	 *  Class constructor. initializes the lists as instances. 
+	 */
 	public Portfolio(){
 		stonks = new ArrayList<Stock>();
 		mutualFunds = new ArrayList<MutualFund>();
 	}
 
+	/**
+	 * Asks user for a type of investement, and a symbol for said investement. calls buyStock() or buyMF() depending on the input. 
+	 * @param keyboard Passed by "reference" from main. used in the method for user input
+	 */
 	public void buy(Scanner keyboard) {// validatiot for buying stuff
 		System.out.print("Enter the kind of investment(stock or mutualfund): ");
 		String invType = keyboard.nextLine().strip();
@@ -33,16 +39,8 @@ public class Portfolio {
 			}
 			break;
 		}
-		symbol = symbol.strip();
-		if (invType.equalsIgnoreCase("stock") || invType.equalsIgnoreCase("s"))
-			buyInvStoc(keyboard, symbol);
-		else
-			buyInvMF(keyboard, symbol);
-	}
-
-	public void buyInvStoc(Scanner keyboard, String symbol) {
 		int quantity;
-		System.out.print("Enter the quantity of stock to buy: ");
+		System.out.print("Enter the quantity to buy: ");
 		while(true){
 			try {
 				quantity = Integer.parseInt(keyboard.nextLine());
@@ -53,7 +51,7 @@ public class Portfolio {
 			break;
 		}
 		float price;
-		System.out.print("Enter the price of the stock to buy: ");
+		System.out.print("Enter the price of the investement to buy: ");
 		while(true){
 			try {
 				price = Float.parseFloat(keyboard.nextLine());
@@ -63,6 +61,21 @@ public class Portfolio {
 			}
 			break;
 		}
+		symbol = symbol.strip();
+		if (invType.equalsIgnoreCase("stock") || invType.equalsIgnoreCase("s"))
+			buyInvStoct(keyboard, symbol, quantity, price);
+		else
+			buyInvMF(keyboard, symbol, quantity, price);
+	}
+
+	/**
+	 * Verifies that symbol's stock already exists. If so, modify said stock with passed paramter values. if not, creates new stock object, and passes parameter values into constructor
+	 * @param keyboard 	passed by reference. Used for user input for stock name.
+	 * @param symbol	passed by value. used to determine if stock exists in the ArrayList. if not, used as symbol for new stock. passed into Stock() constructor to be initialized into new stock
+	 * @param price		passed by value. used to determine new bookValue of the stock (both pre-existsing and new). passed into Stock() constructor to be initialized into new stock 
+	 * @param quantity	passed by value. used to determine new bookValue of the stock. passed into Stock() constructor if needed.
+	 */
+	public void buyInvStoct(Scanner keyboard, String symbol, int quantity, float price) {
 		for (Stock stock : stonks) {
 			if (symbol.equalsIgnoreCase(stock.getSymbol())) {
 				stonks.add(new Stock(quantity, price));
@@ -86,29 +99,14 @@ public class Portfolio {
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity + 9.99)));
 	}
 
-	public void buyInvMF(Scanner keyboard, String symbol) {
-		int quantity;
-		System.out.print("Enter the quantity of mutual fund to buy: ");
-		while(true){
-			try {
-				quantity = Integer.parseInt(keyboard.nextLine());
-			} catch (Exception e) {
-				System.out.println("Invalid input. Try again.");
-				continue;
-			}
-			break;
-		}
-		float price;
-		System.out.print("Enter the price of the mutual fund to buy: ");
-		while(true){
-			try {
-				price = Float.parseFloat(keyboard.nextLine());
-			} catch (Exception e) {
-				System.out.println("Invalid price. Try again.");
-				continue;
-			}
-			break;
-		}
+	/**
+	 * Verifies that symbol's mutual fund exists. If so, modify said mutual fund with passed parameter values. if not, create new mutual fund object, and pass parameter values into it's contructor.
+	 * @param keyboard 	passed by reference. Used for user input for mutual Fund name.
+	 * @param symbol	passed by value. used to determine if mutual Fund exists in the ArrayList. if not, used as symbol for new mutual Fund. passed into mutualFund() constructor to be initialized into new mutual Fund
+	 * @param price		passed by value. used to determine new bookValue of the mutual Fund (both pre-existsing and new). passed into mutualFund() constructor to be initialized into new mutual Fund 
+	 * @param quantity	passed by value. used to determine new bookValue of the mutual Fund. passed into mutualFund() constructor if needed.
+	 */
+	public void buyInvMF(Scanner keyboard, String symbol, int quantity, float price) {
 		for (MutualFund mFund: mutualFunds) {
 			if (symbol.equalsIgnoreCase(mFund.getSymbol())) {
 				mutualFunds.add(new MutualFund(quantity, price));
@@ -132,6 +130,10 @@ public class Portfolio {
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity)));
 	}
 	
+	/**
+	 * Promts user for a symbol. uses that symbol to verify investement exists. if so, sells of said investement, displaying payment and gain. Also modifies stock price, quantity, and book value as needed. If symbol's investement doesn't exist, print out error message
+	 * @param keyboard passed by reference. Used for user input for symbol, price and quantity
+	 */
 	public void sell(Scanner keyboard){
 		System.out.print("Enter the symbol: ");
 		String symbol = keyboard.nextLine();
@@ -237,11 +239,15 @@ public class Portfolio {
 		return;
 	}
 
+	/**
+	 * Goes through every single investement, showing the investement details, and prompting user for the new price. Price is then updated for each investement object. 
+	 * @param keyboard passed by reference. Used to get user input for new prices
+	 */
 	public void update(Scanner keyboard) {
 		boolean found = false;
 		for (Stock stock : stonks) {
 			found = true;
-			System.out.println("Current price of " + stock.getSymbol() + " " + stock.getName() + " is $" + 
+			System.out.print("Current price of " + stock.getSymbol() + " " + stock.getName() + " is $" + 
 			String.format("%.2f", stock.getPrice()) + ".\n" + "Enter the new price: ");
 			float price;
 			while(true){	//getting valid price
@@ -258,7 +264,7 @@ public class Portfolio {
 		}
 		for (MutualFund mFund : mutualFunds) {
 			found = true;
-			System.out.println("Current price of " + mFund.getSymbol() + " " + mFund.getName() + " is $" + 
+			System.out.print("Current price of " + mFund.getSymbol() + " " + mFund.getName() + " is $" + 
 			String.format("%.2f", mFund.getPrice()) + ".\n" + "Enter the new price: ");
 			float price;
 			while(true){	//getting valid price
@@ -279,7 +285,10 @@ public class Portfolio {
 		}
 	}
 
-	public void getGain(Scanner keyboard) {
+	/**
+	 * Goes through every investement, calculating gain based on new prices vs old ones used in bookValue. Displays gain for every single investement, and then overall gain for all investemetn. If no investements exists, prints error message.
+	 */
+	public void getGain() {
 		float gain = 0;
 		boolean found = false;
 		for (Stock stock : stonks) {
@@ -300,26 +309,36 @@ public class Portfolio {
 		}
 	}
 
+	/**
+	 * Promts user to enter the values to search for, such as symbol, key words for the name, and price range. checks if the inputs are blank. if so, sets boolean to *parameter*Exists to false, meaning no need to use it as a search condition in the loops. 
+	 * Name parameter also gets split into array elements to compare to later. 
+	 * check if the userInput for price range contains '-'. if not, set lower and upper bounds to the given value. 
+	 * If exists, check if '-' is at index 0 or strlen(). if so, set upper bound or lower bound to the value that follows/preceeds (respectively).
+	 * Otherwise, assumes '-' is in the middle, uses string.substring with indexes 0, dashIndex, and strlen() to determine lower and upper bounds. 
+	 * loops to cycle through have only 3 if statements, checking if the value was given. if not, search parameter is not considered. 
+	 * Parameters that were considered are checked accordingly. if mismatch is found, object is discared, and next one is checked. 
+	 * Those that meet search requiremetns are printed. 
+	 * @param keyboard passed by reference. used for user input for symbol, name and price range.
+	 */
 	public void search(Scanner keyboard) {
 		boolean symbolExists = true;
 		boolean nameExists = true;
 		boolean priceRangeExists = true;
 		boolean foundAtLeastOne = false;
 		//TODO test all 8 possibilites
-		//todo lare -small
-		System.out.println("Enter a (case-insenstitive) symbol to search for: ");
+		System.out.print("Enter a (case-insenstitive) symbol to search for (blank is acceptable): ");
 		String symbol = keyboard.nextLine();
 		if (symbol.isBlank() || symbol.isEmpty())
 			symbolExists = false;
 		
-		System.out.println("Enter a (case-insensitive) name to search for: ");
+		System.out.print("Enter a (case-insensitive) name to search for (blank is acceptable): ");
 		String name = keyboard.nextLine();
 		if (name.isEmpty() || name.isBlank())
 			nameExists = false; 
 		name = name.strip();
 		String[] nameSplit = name.split("[ ]+");
 
-		System.out.println("Enter the range of prices to search for: ");
+		System.out.print("Enter the range of prices to search for (blank is acceptable): ");
 		float lowerBound = Float.NEGATIVE_INFINITY;
 		float upperBound = Float.POSITIVE_INFINITY;
 		while(true){
@@ -376,6 +395,11 @@ public class Portfolio {
 			
 		}
 		
+		if (!nameExists && !priceRangeExists && !symbolExists){
+			System.out.println("Cannot search with no search conditions. returning to main menu.");
+			return;
+		}
+	
 		for (Stock stock : stonks) {
 			if (symbolExists){
 				if (!symbol.equals(stock.getSymbol())){
@@ -451,6 +475,18 @@ public class Portfolio {
 			System.out.println(" No matches found for:\"Symbol: " + symbol + "; Name: " + name + " Price: " + lowerBound + "-" + upperBound + "\".");
 		}
 
+	}
+
+	/**
+	 * Additional method. Goes through every investement, and displays it's contents.
+	 */
+	public void printAll() {
+		for (Stock i : stonks) {
+			System.out.println(i.toString());
+		}
+		for (MutualFund i : mutualFunds) {
+			System.out.println(i.toString());
+		}
 	}
 }
 
