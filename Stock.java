@@ -150,7 +150,7 @@ public class Stock {
 	 * @param quantity	new quantity to sub in
 	 */
 	public void sellBookValue(int quantity){
-		bookValue *= ((float)quantity/this.quantity);
-		this.quantity = quantity;
+		bookValue *= ((float)quantity/this.quantity);	//need to typecast only numerator (basic C rules) 	
+		this.quantity = quantity;						//update quantity
 	}
 }
