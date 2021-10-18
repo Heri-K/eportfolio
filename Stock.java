@@ -115,7 +115,7 @@ public class Stock {
 	 * @param quantity	user input for quantity to calculate bookValue with 
 	 */
 	public void setBookValue(float price, int quantity){
-		this.bookValue += (price * quantity + 9.99);
+		this.bookValue += (price * quantity + 9.99);	//assuming value already exists (either as 0, or something else), will be adding to it
 	}
 
 	//equals
