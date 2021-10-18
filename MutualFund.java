@@ -1,4 +1,4 @@
-package ukaparyk_a1.eportfolio;
+package ukaparyk_a1.ePortfolio;
 
 public class MutualFund {
 	private String name;
