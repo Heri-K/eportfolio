@@ -13,47 +13,36 @@ public class Portfolio {
 	}
 
 	public void buy(Scanner keyboard) {// validatiot for buying stuff
-		System.out.println("Enter the kind of investment(stock or mutualfund), followed by the symbol (Eg. Stock APPL):");
-		String invType = keyboard.nextLine();
-		String[] split = new String[2];
-		split = invType.split("[ ]+");
-		while (true) {
-			if (invType.isEmpty() || invType.isBlank()) { // checks if the input is blank
+		System.out.print("Enter the kind of investment(stock or mutualfund): ");
+		String invType = keyboard.nextLine().strip();
+		System.out.println(invType);
+		while (true){
+			if (!invType.equalsIgnoreCase("stock") && !invType.equalsIgnoreCase("s") && 
+			!invType.equalsIgnoreCase("mutualfund") && !invType.equalsIgnoreCase("mf") && !invType.equalsIgnoreCase("m")){
 				System.out.println("Not an investement type, try again.");
 				invType = keyboard.nextLine();
-				split = invType.split("[ ]+");
-				continue;
-			}
-			if (!split[0].equalsIgnoreCase("stock") && !split[0].equalsIgnoreCase("mutualfund")) { // checks if investememnt type is valid
-				System.out.println("Not an investement type, try again.");
-				invType = keyboard.nextLine();
-				split = invType.split("[ ]+");
-				continue;
-			}
-			try {
-				if (split[1].isEmpty()) { // checks if 2 words were inputted
-					System.out.println("Symbol missing, try again.");
-					invType = keyboard.nextLine();
-					split = invType.split("[ ]+");
-					continue;
-				}
-			} catch (Exception e) {
-				System.out.println("Symbol missing, try again.");
-				invType = keyboard.nextLine();
-				split = invType.split("[ ]+");
-				continue;
 			}
 			break;
 		}
-		if (split[0].equalsIgnoreCase("stock"))
-			buyInvStoc(keyboard, split[1]);
-		else if (split[0].equalsIgnoreCase("mutualfund"))
-			buyInvMF(keyboard, split[1]);
+		System.out.print("Enter a symbol for the Investement: ");
+		String symbol = keyboard.nextLine();
+		while (true) {
+			if (symbol.isEmpty() || symbol.isBlank()) { // checks if 2 words were inputted
+				System.out.println("Invalid symbol, try again.");
+				invType = keyboard.nextLine();
+			}
+			break;
+		}
+		symbol = symbol.strip();
+		if (invType.equalsIgnoreCase("stock") || invType.equalsIgnoreCase("s"))
+			buyInvStoc(keyboard, symbol);
+		else
+			buyInvMF(keyboard, symbol);
 	}
 
 	public void buyInvStoc(Scanner keyboard, String symbol) {
 		int quantity;
-		System.out.println("Enter the quantity of stock to buy:");
+		System.out.print("Enter the quantity of stock to buy: ");
 		while(true){
 			try {
 				quantity = Integer.parseInt(keyboard.nextLine());
@@ -64,7 +53,7 @@ public class Portfolio {
 			break;
 		}
 		float price;
-		System.out.println("Enter the price of the stock to buy:");
+		System.out.print("Enter the price of the stock to buy: ");
 		while(true){
 			try {
 				price = Float.parseFloat(keyboard.nextLine());
@@ -82,7 +71,7 @@ public class Portfolio {
 				return;
 			}
 		}
-		System.out.println("Enter the name of the stock:");
+		System.out.print("Enter the name of the stock: ");
 		String stockName = keyboard.nextLine();
 		while(true){
 			if (stockName.isBlank() || stockName.isEmpty()){
@@ -91,6 +80,7 @@ public class Portfolio {
 			}
 			break;
 		}
+		stockName = stockName.strip();
 		stonks.add(new Stock(symbol, stockName, quantity, price));
 		System.out.println("Bought " + symbol + " " + stockName + ": " + 
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity + 9.99)));
@@ -98,7 +88,7 @@ public class Portfolio {
 
 	public void buyInvMF(Scanner keyboard, String symbol) {
 		int quantity;
-		System.out.println("Enter the quantity of Mutual Fund to buy:");
+		System.out.print("Enter the quantity of mutual fund to buy: ");
 		while(true){
 			try {
 				quantity = Integer.parseInt(keyboard.nextLine());
@@ -109,7 +99,7 @@ public class Portfolio {
 			break;
 		}
 		float price;
-		System.out.println("Enter the price of the Mutual Fund to buy:");
+		System.out.print("Enter the price of the mutual fund to buy: ");
 		while(true){
 			try {
 				price = Float.parseFloat(keyboard.nextLine());
@@ -127,7 +117,7 @@ public class Portfolio {
 				return;
 			}
 		}
-		System.out.println("Enter the name of the mutual fund:");
+		System.out.print("Enter the name of the mutual fund: ");
 		String mFundName = keyboard.nextLine();
 		while(true){
 			if (mFundName.isBlank() || mFundName.isEmpty()){
@@ -136,13 +126,14 @@ public class Portfolio {
 			}
 			break;
 		}
+		mFundName = mFundName.strip();
 		mutualFunds.add(new MutualFund(symbol, mFundName, quantity, price));
 		System.out.println("Bought " + symbol + " " + mFundName + ": " + 
 		quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", (price * quantity)));
 	}
 	
 	public void sell(Scanner keyboard){
-		System.out.println("Enter the symbol:");
+		System.out.print("Enter the symbol: ");
 		String symbol = keyboard.nextLine();
 		
 		int quantity;
@@ -158,7 +149,7 @@ public class Portfolio {
 		symbol = symbol.strip().toLowerCase();
 		for (Stock stock: stonks) {
 			if (symbol.equalsIgnoreCase(stock.getSymbol())){
-				System.out.println("Enter the quantity of " + symbol + " to sell: ");
+				System.out.print("Enter the quantity of " + symbol + " to sell: ");
 				while (true) {	//getting appropriate quantity
 					try {	//quanity as integer, not string
 						quantity = Integer.parseInt(keyboard.nextLine());
@@ -167,12 +158,12 @@ public class Portfolio {
 						continue;
 					}
 					if (quantity > stock.getQuantity() || quantity <= 0){ //proper range
-						System.out.println("Value outside the range, try again;");
+						System.out.println("Value outside the range, try again.");
 						continue;
 					}
 					break;
 				}
-				System.out.println("Enter the price:");
+				System.out.print("Enter the price: ");
 				while (true) {	//getting price
 					try {	//price as float, not string
 						price = Float.parseFloat(keyboard.nextLine());
@@ -183,7 +174,9 @@ public class Portfolio {
 					break;
 				}
 				payment = (price * quantity) - (float)9.99;
-				gain = payment - stock.getBookValue();
+				float temp = stock.getBookValue();
+				stock.sellBookValue(stock.getQuantity() - quantity);
+				gain = payment - (temp - stock.getBookValue());
 				System.out.println("Successfully sold " + quantity + " of " + symbol + " " + stock.getName() + " for " + price + "each.");
 				System.out.println("Total payment: $" + payment + ", with net gain of $" + gain + ".");
 				if (stock.getQuantity() == 0){
@@ -191,7 +184,6 @@ public class Portfolio {
 					return;
 				}
 				stock.setPrice(price);
-				stock.sellBookValue(stock.getQuantity() - quantity);
 				System.out.println("Current status of " + symbol + " " + stock.getName() + ": \n" + 
 					"\tQuantity: " + quantity + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f",stock.getBookValue()));
 			}
@@ -199,8 +191,8 @@ public class Portfolio {
 		}
 		for (MutualFund mFund : mutualFunds) {
 			if (symbol.equalsIgnoreCase(mFund.getSymbol())) {
-				if (mFund.equals(symbol)){
-					System.out.println("Enter the quantity of " + symbol + " to sell: ");
+				if (symbol.equalsIgnoreCase(mFund.getSymbol())){
+					System.out.print("Enter the quantity of " + symbol + " to sell: ");
 					while (true) {	//getting appropriate quantity
 						try {	//quanity as integer, not string
 							quantity = Integer.parseInt(keyboard.nextLine());
@@ -214,7 +206,7 @@ public class Portfolio {
 						}
 						break;
 					}
-					System.out.println("Enter the price:");
+					System.out.print("Enter the price: ");
 					while (true) {	//getting price
 						try {	//price as float, not string
 							price = Float.parseFloat(keyboard.nextLine());
@@ -225,7 +217,9 @@ public class Portfolio {
 						break;
 					}
 					payment = (price * quantity) - 45;
-					gain = payment - mFund.getBookValue();
+					float temp = mFund.getBookValue();
+					mFund.sellBookValue(mFund.getQuantity() - quantity);
+					gain = payment - (temp - mFund.getBookValue());
 					System.out.println("Successfully sold " + quantity + " of " + symbol + " " + mFund.getName() + " for " + price + " each.");
 					System.out.println("Total payment: $" + payment + ", with net gain of $" + gain + ".");
 					if (mFund.getQuantity() == 0){
@@ -233,7 +227,6 @@ public class Portfolio {
 						return;
 					}
 					mFund.setPrice(price);
-					mFund.sellBookValue(mFund.getQuantity() - quantity);
 					System.out.println("Current status of " + symbol + " " + mFund.getName() + ": \n" + 
 						"\tQuantity: " + quantity + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f", mFund.getBookValue()));
 				}
@@ -323,6 +316,7 @@ public class Portfolio {
 		String name = keyboard.nextLine();
 		if (name.isEmpty() || name.isBlank())
 			nameExists = false; 
+		name = name.strip();
 		String[] nameSplit = name.split("[ ]+");
 
 		System.out.println("Enter the range of prices to search for: ");
@@ -331,7 +325,7 @@ public class Portfolio {
 		while(true){
 			String priceRangeRaw = keyboard.nextLine();
 			int dashIndex;
-			priceRangeRaw = priceRangeRaw.strip();
+			priceRangeRaw = priceRangeRaw.strip(); 
 			if (priceRangeRaw.isBlank() || priceRangeRaw.isEmpty()){
 				priceRangeExists = false;
 				break;
@@ -341,7 +335,7 @@ public class Portfolio {
 			if (dashIndex == -1){	//exact value == lowerbound = upperbound
 				try {
 					lowerBound = Float.parseFloat(priceRangeRaw);	
-				} catch (Exception e) {		//TODO fix
+				} catch (Exception e) {
 					System.out.println("Invalid price input, try again.");
 					continue;
 				}
@@ -350,8 +344,11 @@ public class Portfolio {
 			}
 			//dash exists
 			if (dashIndex == 0){	//change upper bound only, lower bound is still neg inf
+				if(priceRangeRaw.length() == 1){
+					break;
+				}
 				try {
-					upperBound = Float.parseFloat(priceRangeRaw.substring(1, priceRangeRaw.length()-1));
+					upperBound = Float.parseFloat(priceRangeRaw.substring(1, priceRangeRaw.length()));
 					
 				} catch (Exception e) {
 					System.out.println("Invalid upper bound, try again.");
@@ -360,7 +357,7 @@ public class Portfolio {
 			}
 			else if (dashIndex == (priceRangeRaw.length()-1)){
 				try {
-					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex-1));
+					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex));
 				} catch (Exception e) {
 					System.out.println("Invalid lower bound, try again.");
 					continue;
@@ -368,8 +365,8 @@ public class Portfolio {
 			}
 			else{
 				try {
-					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex-1));
-					upperBound = Float.parseFloat(priceRangeRaw.substring(dashIndex+1, priceRangeRaw.length()-1));
+					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex));
+					upperBound = Float.parseFloat(priceRangeRaw.substring(dashIndex+1, priceRangeRaw.length()));
 				} catch (Exception e) {
 					System.out.println("Invalid bounds, try again.");
 					continue;
@@ -451,7 +448,7 @@ public class Portfolio {
 		}
 		
 		if (!foundAtLeastOne){
-			System.out.println(" No matches found for:\"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + "\".");
+			System.out.println(" No matches found for:\"Symbol: " + symbol + "; Name: " + name + " Price: " + lowerBound + "-" + upperBound + "\".");
 		}
 
 	}
