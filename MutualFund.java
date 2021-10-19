@@ -1,5 +1,7 @@
-package ukaparyk_a1.ePortfolio;
-
+package ePortfolio;
+/**
+ * Contains private variables, methods related to accessing/mutating said variables, method toString and some custom methods 
+ */
 public class MutualFund {
 	private String name;
 	private String symbol;
@@ -18,16 +20,7 @@ public class MutualFund {
 		price = 0;
 		bookValue = 0;
 	}
-	/**
-	 * takes user inputs for quantity and price and sets local class cariables to them. also caluclates bookValue, and modifies it. assumes symbol and name already exist
-	 * @param quantity	user input for quantity. will change MutualFund.quantity value
-	 * @param price		user input for price. will change MutualFund.price value
-	 */
-	public MutualFund(int quantity, float price) {
-		this.quantity = quantity;
-		this.price = price;
-		setBookValue(quantity, price);
-	}
+	
 	/**
 	 * takes user input for all values, and creates MutualFund object using them. assume no previous info was given. calculates bookValue as well
 	 * @param symbol		user input. will be used to set MutualFund.symbol
@@ -152,5 +145,16 @@ public class MutualFund {
 	public void sellBookValue(int quantity) {
 		bookValue *= ((float)quantity/this.quantity);	//need to typecast only numerator (basic C rules)
 		this.quantity = quantity;						//update quantity
+	}
+
+	/**
+	 * takes parameters and updates the values. also calculates bookValue
+	 * @param quantity	provided by the user. also used in updating bookValue 
+	 * @param price		provided by the user. also used in updating bookValue
+	 */
+	public void updateBuy(int quantity, float price){
+		this.price = price;
+		this.quantity += quantity;
+		setBookValue(quantity, price);
 	}
 }

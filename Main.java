@@ -1,6 +1,8 @@
-package ukaparyk_a1.ePortfolio;
+package ePortfolio;
 import java.util.Scanner;
-
+/**
+ * Main class. contains main method
+ */
 public class Main {
 	/**
 	 * Main. calls for a menu, goes until "quit" or "q" is entered. Initializes portfolio instance, and scanner instance. 
@@ -14,7 +16,7 @@ public class Main {
 		Scanner keyboard = new Scanner(System.in);
 		String command = new String();
 		while (!command.strip().equalsIgnoreCase("quit") && !command.strip().equalsIgnoreCase("q")) {
-			System.out.print("Enter the command (available commands are buy, sell, update, getGain, search, quit): ");
+			System.out.print("Enter the command (available commands are buy, sell, update, getGain, search, printAll, quit): ");
 			command = keyboard.nextLine();
 
 			switch(command.toLowerCase().strip()){
@@ -26,7 +28,9 @@ public class Main {
 				case "sell":
 					portfolio.sell(keyboard);
 					break;
+
 				case "u":
+				case "upd":
 				case "update":
 					portfolio.update(keyboard);
 					break;
