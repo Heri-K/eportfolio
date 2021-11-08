@@ -4,6 +4,8 @@ package ePortfolio;
  */
 public class Stock extends Investement{
 	
+	//TODO accessible from any file, call main
+
 	//constructors
 	/**
 	 * Parameter-less constructor. sets string values to "NaN" and int/float values to 0
@@ -51,5 +53,10 @@ public class Stock extends Investement{
 	 */
 	public String toString(){
 		return "Type: Stock\n" +  super.toString();
+	}
+
+	@Override
+	public String toFile(){
+		return "type = \"stock\"\n" + super.toFile();
 	}
 }

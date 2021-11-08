@@ -11,6 +11,10 @@ public class Main {
 	 * @param argv
 	 */
 	public static void main(String argv[]) {
+		if (argv.length > 1){
+			System.out.println("Filename not provided.");
+			return;
+		}
 		Portfolio portfolio = new Portfolio();
 		Scanner keyboard = new Scanner(System.in);
 		String command = new String();
@@ -49,13 +53,15 @@ public class Main {
 					break;
 				case "q":
 				case "quit":
-					System.out.println("Exiting...");
 					break;
 				default:
 					System.out.println("Invalid command, try again.");
 					break;
 			}
 		}
+		System.out.println("Saving to " + argv[0] + ".");
+		portfolio.saveFile(argv[0]);
+		System.out.println("Exiting...");
 		keyboard.close();
 	}
 }

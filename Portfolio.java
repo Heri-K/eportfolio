@@ -2,6 +2,12 @@ package ePortfolio;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.File;
 /**
  * Class contains methods to manipulate private arraylist variables, display them, and interacts with Stock and MutiualFund classes
  */
@@ -40,7 +46,7 @@ public class Portfolio {
 		String symbol = keyboard.nextLine();
 		while (true) { //checks if the symbol is valid
 			if (symbol.isEmpty() || symbol.isBlank()) { 
-				System.out.println("Invalid symbol, try again.");
+				System.out.print("Invalid symbol, try again. Enter a symbol for the Investement: ");
 				symbol = keyboard.nextLine();
 			}
 			break;
@@ -52,7 +58,7 @@ public class Portfolio {
 			try {	//if input is 10a, parsin would thro error. catching said errors
 				quantity = Integer.parseInt(keyboard.nextLine());
 			} catch (Exception e) {
-				System.out.println("Invalid input. Try again.");
+				System.out.print("Invalid input. Try again. Enter the quantity to buy: ");
 				continue;	//still loop, still validation until proper
 			}
 			break;
@@ -63,7 +69,7 @@ public class Portfolio {
 			try {	//explained in quaninty
 				price = Float.parseFloat(keyboard.nextLine());
 			} catch (Exception e) {
-				System.out.println("Invalid price. Try again.");	
+				System.out.print("Invalid price. Try again. Enter the price of the investement to buy: ");	
 				continue;
 			}
 			break;
@@ -82,7 +88,6 @@ public class Portfolio {
 	public void buyInv(Scanner keyboard, String symbol, int quantity, float price, char type) {
 		for (Investement i : inv) {	//goes through every inv object, checking there will be no duplicates
 			if (symbol.equalsIgnoreCase(i.getSymbol())) {	//duplicate found, update quantity, price, bookvalue
-				System.out.println("here");
 				i.updateBuy(quantity, price);
 				System.out.println("Bought " + symbol + " " + i.getName() + ": " + 
 				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", i.getBookValue()));	//prtint the output, and return
@@ -99,14 +104,14 @@ public class Portfolio {
 		String invName = keyboard.nextLine();
 		while(true){	//validating name isn't blank
 			if (invName.isBlank() || invName.isEmpty()){
-				System.out.println("Invalid name, try again.");
+				System.out.print("Invalid name, try again. Enter the name: ");
 				invName = keyboard.nextLine();
 			}
 			break;
 		}
 		invName = invName.strip(); //no name whitespace
 
-		inv.add(((type == 's') ? new Stock(invName, symbol, quantity, price) : new MutualFund(symbol, invName, quantity, price)));	//creating new stock
+		inv.add(((type == 's') ? new Stock(invName, symbol, quantity, price) : new MutualFund(invName, symbol, quantity, price)));	//creating new stock
 		System.out.println("Bought " + symbol + " " + invName + ": " + 
 		quantity + " shares for $" + String.format("%.2f", price) + " each. Total Book Value is: $" + String.format("%.2f", (price * quantity + 9.99)));
 	}
@@ -124,7 +129,7 @@ public class Portfolio {
 		float price, gain, payment;
 		while(true){	//validating symbol
 			if(symbol.isEmpty() || symbol.isBlank()){
-				System.out.println("Invalid input, try again.");
+				System.out.print("Invalid input, try again. Enter the symbol: ");
 				symbol = keyboard.nextLine();
 				continue;
 			}
@@ -138,11 +143,11 @@ public class Portfolio {
 					try {	//quanity as integer, not string
 						quantity = Integer.parseInt(keyboard.nextLine());
 					} catch (Exception e) {
-						System.out.println("Invalid value, try again.");
+						System.out.print("Invalid value, try again. Enter the quantity: ");
 						continue;
 					}	//making sure quaninty is not larger than what we have, and not <= 0
 					if (quantity > i.getQuantity() || quantity <= 0){ //proper range
-						System.out.println("Value outside the range, try again.");
+						System.out.print("Value outside the range, try again. Enter the Quantity");
 						continue;
 					}
 					break;
@@ -152,7 +157,7 @@ public class Portfolio {
 					try {	//price as float, not string
 						price = Float.parseFloat(keyboard.nextLine());
 					} catch (Exception e) {
-						System.out.println("Invalid price, try again.");
+						System.out.print("Invalid price, try again. Enter the price: ");
 						continue;
 					}
 					break;
@@ -193,7 +198,7 @@ public class Portfolio {
 				try {
 					price = Float.parseFloat(keyboard.nextLine());
 				} catch (Exception e) {					//TODO blank input
-					System.out.println("Invalid price, try again.");
+					System.out.print("Invalid price, try again. Enter the price: ");
 					continue;
 				}
 				break;
@@ -265,7 +270,7 @@ public class Portfolio {
 				try {	//proper value
 					lowerBound = Float.parseFloat(priceRangeRaw);	
 				} catch (Exception e) {
-					System.out.println("Invalid price input, try again.");
+					System.out.print("Invalid price input, try again. Enter the price range: ");
 					continue;
 				}
 				upperBound = lowerBound;	//exact value == lowerbound = upperbound
@@ -279,7 +284,7 @@ public class Portfolio {
 				try {//change upper bound only, lower bound is still neg inf
 					upperBound = Float.parseFloat(priceRangeRaw.substring(1, priceRangeRaw.length()));	//substring of right after '-' to end, parse to float
 				} catch (Exception e) {
-					System.out.println("Invalid upper bound, try again.");	
+					System.out.print("Invalid upper bound, try again. Enter the price range: ");	
 					continue;
 				}
 				break; //info gathered, exit the loop
@@ -288,7 +293,7 @@ public class Portfolio {
 				try {
 					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex));	//parse to float substring from index 0 to right before '-'
 				} catch (Exception e) {
-					System.out.println("Invalid lower bound, try again.");
+					System.out.print("Invalid lower bound, try again. Enter the price range: ");
 					continue;
 				}
 				break; //info gathered, exit loop
@@ -298,7 +303,7 @@ public class Portfolio {
 					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex));
 					upperBound = Float.parseFloat(priceRangeRaw.substring(dashIndex+1, priceRangeRaw.length()));
 				} catch (Exception e) {
-					System.out.println("Invalid bounds, try again.");
+					System.out.print("Invalid bounds, try again. Enter the price range: ");
 					continue;
 				}
 			}
@@ -361,5 +366,36 @@ public class Portfolio {
 		for (Investement i : inv) {
 			System.out.println(i.toString() + "\n");
 		}
+	}
+
+	public void saveFile(String fileName){
+		PrintWriter outStream = null;
+		try {
+			outStream = new PrintWriter(new FileOutputStream(fileName), true);
+		} catch (FileNotFoundException e) {
+			System.out.println("Error opening file " + fileName + ". ");
+			return;
+		}
+		for (Investement i: inv) {
+			outStream.println(i.toFile());
+		}
+		outStream.close();
+	}
+
+	public void readFile(String filename){
+		File file = new File(filename);
+		Scanner readFile = null;
+
+		if(!file.exists()){
+			System.out.println("File " + filename + " does not exists. cannot read.");
+			return;
+		}
+		try {
+			readFile = new Scanner(new FileInputStream(filename));
+		} catch (Exception e) {
+			System.out.println("Cannot open file " + filename + ". Returning to main.");
+			return;
+		}
+
 	}
 }
