@@ -22,7 +22,7 @@ public class Portfolio {
 		System.out.println("Running buy() method.");
 		System.out.print("Enter the kind of Investment(stock or mutualfund): ");
 		String invType = keyboard.nextLine().strip();	//strip to get rid of extra spaces beggining/end
-		char type = 's';
+		char type = 'm';
 		while (true){	//validation for proper investement type
 			if (!invType.equalsIgnoreCase("stock") && !invType.equalsIgnoreCase("s") && 
 			!invType.equalsIgnoreCase("mutualfund") && !invType.equalsIgnoreCase("mf") && !invType.equalsIgnoreCase("m")){
@@ -82,6 +82,7 @@ public class Portfolio {
 	public void buyInv(Scanner keyboard, String symbol, int quantity, float price, char type) {
 		for (Investement i : inv) {	//goes through every inv object, checking there will be no duplicates
 			if (symbol.equalsIgnoreCase(i.getSymbol())) {	//duplicate found, update quantity, price, bookvalue
+				System.out.println("here");
 				i.updateBuy(quantity, price);
 				System.out.println("Bought " + symbol + " " + i.getName() + ": " + 
 				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", i.getBookValue()));	//prtint the output, and return
@@ -93,7 +94,7 @@ public class Portfolio {
 		if (type == 's')
 			System.out.print("Enter the name of the stock: ");	//stock doesnt exist, need the name
 		else
-			System.out.println("Enter the name of the mutual fund: ");
+			System.out.print("Enter the name of the mutual fund: ");
 		
 		String invName = keyboard.nextLine();
 		while(true){	//validating name isn't blank
@@ -105,7 +106,7 @@ public class Portfolio {
 		}
 		invName = invName.strip(); //no name whitespace
 
-		inv.add((type == 's') ? new Stock(symbol, invName, quantity, price) : new MutualFund(symbol, invName, quantity, price));	//creating new stock
+		inv.add(((type == 's') ? new Stock(invName, symbol, quantity, price) : new MutualFund(symbol, invName, quantity, price)));	//creating new stock
 		System.out.println("Bought " + symbol + " " + invName + ": " + 
 		quantity + " shares for $" + String.format("%.2f", price) + " each. Total Book Value is: $" + String.format("%.2f", (price * quantity + 9.99)));
 	}

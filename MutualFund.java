@@ -26,7 +26,7 @@ public class MutualFund extends Investement{
 
 	//toString
 	public String toString(){
-		return "Type: Mutial Fund\n" +  super.toString();
+		return "Type: Mutual Fund\n" +  super.toString();
 	}
 	
 	@Override
