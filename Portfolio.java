@@ -6,13 +6,12 @@ import java.util.Scanner;
  * Class contains methods to manipulate private arraylist variables, display them, and interacts with Stock and MutiualFund classes
  */
 public class Portfolio {
-	private ArrayList<Investement> investements;
+	private ArrayList<Investement> inv;
 	/**
 	 *  Class constructor. initializes the lists as instances. 
 	 */
 	public Portfolio(){
-		stonks = new ArrayList<Stock>();
-		mutualFunds = new ArrayList<MutualFund>();
+		inv = new ArrayList<Investement>();
 	}
 
 	/**
@@ -23,6 +22,7 @@ public class Portfolio {
 		System.out.println("Running buy() method.");
 		System.out.print("Enter the kind of Investment(stock or mutualfund): ");
 		String invType = keyboard.nextLine().strip();	//strip to get rid of extra spaces beggining/end
+		char type = 's';
 		while (true){	//validation for proper investement type
 			if (!invType.equalsIgnoreCase("stock") && !invType.equalsIgnoreCase("s") && 
 			!invType.equalsIgnoreCase("mutualfund") && !invType.equalsIgnoreCase("mf") && !invType.equalsIgnoreCase("m")){
@@ -32,6 +32,10 @@ public class Portfolio {
 			break;	//if valid, will bypass if statement, break the loop
 		}
 		invType = invType.strip();
+	
+		if (invType.equalsIgnoreCase("stock") || invType.equalsIgnoreCase("s"))
+			type = 's';
+		
 		System.out.print("Enter a symbol for the Investement: ");
 		String symbol = keyboard.nextLine();
 		while (true) { //checks if the symbol is valid
@@ -65,73 +69,45 @@ public class Portfolio {
 			break;
 		}
 		//call buyInvestement depending on investement type
-		if (invType.equalsIgnoreCase("stock") || invType.equalsIgnoreCase("s")){
-			buyInvStoct(keyboard, symbol, quantity, price);
+		buyInv(keyboard, symbol, quantity, price, type);
+	}
+
+	/**
+	 * Verifies that symbol's investement already exists. If so, modify said inv with passed paramter values. if not, creates new inv object, and passes parameter values into constructor
+	 * @param keyboard 	passed by reference. Used for user input for inv name.
+	 * @param symbol	passed by value. used to determine if inv exists in the ArrayList. if not, used as symbol for new inv. passed into inv() constructor to be initialized into new stock
+	 * @param price		passed by value. used to determine new bookValue of the inv (both pre-existsing and new). passed into inv() constructor to be initialized into new inv 
+	 * @param quantity	passed by value. used to determine new bookValue of the inv. passed into inv() constructor if needed.
+	 */
+	public void buyInv(Scanner keyboard, String symbol, int quantity, float price, char type) {
+		for (Investement i : inv) {	//goes through every inv object, checking there will be no duplicates
+			if (symbol.equalsIgnoreCase(i.getSymbol())) {	//duplicate found, update quantity, price, bookvalue
+				i.updateBuy(quantity, price);
+				System.out.println("Bought " + symbol + " " + i.getName() + ": " + 
+				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", i.getBookValue()));	//prtint the output, and return
+				return;
+							// TODO check if more than 1 symbol exists
+							//if does, check if type matches
+			}
 		}
+		if (type == 's')
+			System.out.print("Enter the name of the stock: ");	//stock doesnt exist, need the name
 		else
-			buyInvMF(keyboard, symbol, quantity, price);
-	}
-
-	/**
-	 * Verifies that symbol's stock already exists. If so, modify said stock with passed paramter values. if not, creates new stock object, and passes parameter values into constructor
-	 * @param keyboard 	passed by reference. Used for user input for stock name.
-	 * @param symbol	passed by value. used to determine if stock exists in the ArrayList. if not, used as symbol for new stock. passed into Stock() constructor to be initialized into new stock
-	 * @param price		passed by value. used to determine new bookValue of the stock (both pre-existsing and new). passed into Stock() constructor to be initialized into new stock 
-	 * @param quantity	passed by value. used to determine new bookValue of the stock. passed into Stock() constructor if needed.
-	 */
-	public void buyInvStoct(Scanner keyboard, String symbol, int quantity, float price) {
-		for (Stock stock : stonks) {	//goes through every stock object, checking there will be no duplicates
-			if (symbol.equalsIgnoreCase(stock.getSymbol())) {	//duplicate found, update quantity, price, bookvalue
-				stock.updateBuy(quantity, price);
-				System.out.println("Bought " + symbol + " " + stock.getName() + ": " + 
-				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", stock.getBookValue()));	//prtint the output, and return
-				return;
-			}
-		}
-		System.out.print("Enter the name of the stock: ");	//stock doesnt exist, need the name
-		String stockName = keyboard.nextLine();
+			System.out.println("Enter the name of the mutual fund: ");
+		
+		String invName = keyboard.nextLine();
 		while(true){	//validating name isn't blank
-			if (stockName.isBlank() || stockName.isEmpty()){
+			if (invName.isBlank() || invName.isEmpty()){
 				System.out.println("Invalid name, try again.");
-				stockName = keyboard.nextLine();
+				invName = keyboard.nextLine();
 			}
 			break;
 		}
-		stockName = stockName.strip(); //no name whitespace
-		stonks.add(new Stock(symbol, stockName, quantity, price));	//creating new stock
-		System.out.println("Bought " + symbol + " " + stockName + ": " + 
-		quantity + " shares for $" + String.format("%.2f", price) + " each. Total Book Value is: $" + String.format("%.2f", (price * quantity + 9.99)));
-	}
+		invName = invName.strip(); //no name whitespace
 
-	/**
-	 * Verifies that symbol's mutual fund exists. If so, modify said mutual fund with passed parameter values. if not, create new mutual fund object, and pass parameter values into it's contructor.
-	 * @param keyboard 	passed by reference. Used for user input for mutual Fund name.
-	 * @param symbol	passed by value. used to determine if mutual Fund exists in the ArrayList. if not, used as symbol for new mutual Fund. passed into mutualFund() constructor to be initialized into new mutual Fund
-	 * @param price		passed by value. used to determine new bookValue of the mutual Fund (both pre-existsing and new). passed into mutualFund() constructor to be initialized into new mutual Fund 
-	 * @param quantity	passed by value. used to determine new bookValue of the mutual Fund. passed into mutualFund() constructor if needed.
-	 */
-	public void buyInvMF(Scanner keyboard, String symbol, int quantity, float price) {
-		for (MutualFund mFund: mutualFunds) {	//checking for duplicates
-			if (symbol.equalsIgnoreCase(mFund.getSymbol())) {	//duplicate found
-				mFund.updateBuy(quantity, price);
-				System.out.println("Bought " + symbol + " " + mFund.getName() + ": " + 
-				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", mFund.getBookValue()));
-				return;
-			}
-		}
-		System.out.print("Enter the name of the mutual fund: ");	//no duplicates found, creating new MF, need name 
-		String mFundName = keyboard.nextLine();
-		while(true){ //name validation
-			if (mFundName.isBlank() || mFundName.isEmpty()){
-				System.out.println("Invalid name, try again.");
-				mFundName = keyboard.nextLine();
-			}
-			break;
-		}
-		mFundName = mFundName.strip();
-		mutualFunds.add(new MutualFund(symbol, mFundName, quantity, price)); //creating new
-		System.out.println("Bought " + symbol + " " + mFundName + ": " + 
-		quantity + " shares for $" + String.format("%.2f", price) + " each. Total Book Value is: $" + String.format("%.2f", (price * quantity)));
+		inv.add((type == 's') ? new Stock(symbol, invName, quantity, price) : new MutualFund(symbol, invName, quantity, price));	//creating new stock
+		System.out.println("Bought " + symbol + " " + invName + ": " + 
+		quantity + " shares for $" + String.format("%.2f", price) + " each. Total Book Value is: $" + String.format("%.2f", (price * quantity + 9.99)));
 	}
 	
 	/**
@@ -154,8 +130,8 @@ public class Portfolio {
 			break;
 		}
 		symbol = symbol.strip();
-		for (Stock stock: stonks) {	//checking to see if stock exists
-			if (symbol.equalsIgnoreCase(stock.getSymbol())){
+		for (Investement i : inv) {	//checking to see if stock exists
+			if (symbol.equalsIgnoreCase(i.getSymbol())){
 				System.out.print("Enter the quantity of " + symbol + " to sell: ");
 				while (true) {	//getting appropriate quantity
 					try {	//quanity as integer, not string
@@ -164,7 +140,7 @@ public class Portfolio {
 						System.out.println("Invalid value, try again.");
 						continue;
 					}	//making sure quaninty is not larger than what we have, and not <= 0
-					if (quantity > stock.getQuantity() || quantity <= 0){ //proper range
+					if (quantity > i.getQuantity() || quantity <= 0){ //proper range
 						System.out.println("Value outside the range, try again.");
 						continue;
 					}
@@ -180,63 +156,19 @@ public class Portfolio {
 					}
 					break;
 				}
-				payment = (price * quantity) - (float)9.99;	//payment as to how much user "recieves"
-				float temp = stock.getBookValue();
-				stock.sellBookValue(stock.getQuantity() - quantity);
-				gain = payment - (temp - stock.getBookValue());	//overall gain for said stocks
-				System.out.println("Successfully sold " + quantity + " of " + symbol + " " + stock.getName() + " for " + price + " each.");
+				payment = i.getPayment(price, quantity);	//payment as to how much user "recieves"
+				float temp = i.getBookValue();
+				i.sellBookValue(i.getQuantity() - quantity);
+				gain = payment - (temp - i.getBookValue());	//overall gain for said stocks
+				System.out.println("Successfully sold " + quantity + " of " + symbol + " " + i.getName() + " for " + price + " each.");
 				System.out.println("Total payment: $" + payment + ", with net gain of $" + String.format("%.2f", gain) + ".");
-				if (stock.getQuantity() == 0){ //if quaninty 0, we don't have anymore stock, no need to keep track of it
-					stonks.remove(stock);
+				if (i.getQuantity() == 0){ //if quaninty 0, we don't have anymore stock, no need to keep track of it
+					inv.remove(i);
 					return;
 				}
-				stock.setPrice(price);
-				System.out.println("Current status of " + symbol + " " + stock.getName() + ": \n" + 
-					"\tQuantity: " + stock.getQuantity() + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f",stock.getBookValue()));
-				return;
-			}
-		}
-		for (MutualFund mFund : mutualFunds) {	//checking to see if MF exists
-			if (symbol.equalsIgnoreCase(mFund.getSymbol())) {	//match found based on symbol
-				if (symbol.equalsIgnoreCase(mFund.getSymbol())){
-					System.out.print("Enter the quantity of " + symbol + " to sell: ");
-					while (true) {	//getting appropriate quantity
-						try {	//quanity as integer, not string
-							quantity = Integer.parseInt(keyboard.nextLine());
-						} catch (Exception e) {
-							System.out.println("Invalid value, try again.");
-							continue;
-						}
-						if (quantity > mFund.getQuantity() || quantity <= 0){ //proper range
-							System.out.println("Value outside the range, try again;");
-							continue;
-						}
-						break;
-					}
-					System.out.print("Enter the price: ");
-					while (true) {	//getting price
-						try {	//price as float, not string
-							price = Float.parseFloat(keyboard.nextLine());
-						} catch (Exception e) {
-							System.out.println("Invalid price, try again.");
-							continue;
-						}
-						break;
-					}
-					payment = (price * quantity) - (float)45;	//payment recieved
-					float temp = mFund.getBookValue();
-					mFund.sellBookValue(mFund.getQuantity() - quantity);
-					gain = payment - (temp - mFund.getBookValue());	//overall gain
-					System.out.println("Successfully sold " + quantity + " of " + symbol + " " + mFund.getName() + " for " + price + " each.");
-					System.out.println("Total payment: $" + payment + ", with net gain of $" + String.format("%.2f", gain) + ".");
-					if (mFund.getQuantity() == 0){
-						mutualFunds.remove(mFund);
-						return;
-					}
-					mFund.setPrice(price);	//new price for the MF
-					System.out.println("Current status of " + symbol + " " + mFund.getName() + ": \n" + 
-						"\tQuantity: " + mFund.getQuantity() + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f", mFund.getBookValue()));
-				}
+				i.setPrice(price);
+				System.out.println("Current status of " + symbol + " " + i.getName() + ": \n" + 
+					"\tQuantity: " + i.getQuantity() + "\n\tPrice: " + price + "\n\tBook Value: $" + String.format("%.2f",i.getBookValue()));
 				return;
 			}
 		}
@@ -251,39 +183,22 @@ public class Portfolio {
 	public void update(Scanner keyboard) {
 		System.out.println("Running update().");
 		boolean found = false;	//making sure at least one investement gets update
-		for (Stock stock : stonks) {
+		for (Investement i : inv) {
 			found = true;	//investement found
-			System.out.print("Current price of " + stock.getSymbol() + " " + stock.getName() + " is $" + 
-			String.format("%.2f", stock.getPrice()) + ".\n" + "Enter the new price: ");	//current stats
+			System.out.print("Current price of " + i.getSymbol() + " " + i.getName() + " is $" + 
+			String.format("%.2f", i.getPrice()) + ".\n" + "Enter the new price: ");	//current stats
 			float price;
 			while(true){	//getting valid price
 				try {
 					price = Float.parseFloat(keyboard.nextLine());
-				} catch (Exception e) {
+				} catch (Exception e) {					//TODO blank input
 					System.out.println("Invalid price, try again.");
 					continue;
 				}
 				break;
 			}
-			stock.setPrice(price);
-			System.out.println("Updated " + stock.toString());
-		}
-		for (MutualFund mFund : mutualFunds) {
-			found = true;	//investement found
-			System.out.print("Current price of " + mFund.getSymbol() + " " + mFund.getName() + " is $" + 
-			String.format("%.2f", mFund.getPrice()) + ".\n" + "Enter the new price: ");	//current status
-			float price;
-			while(true){	//getting valid price
-				try {
-					price = Float.parseFloat(keyboard.nextLine());
-				} catch (Exception e) {
-					System.out.println("Invalid price, try again.");
-					continue;
-				}
-				break;
-			}
-			mFund.setPrice(price);
-			System.out.println("Updated " + mFund.toString());
+			i.setPrice(price);
+			System.out.println("Updated " + i.toString());
 		}
 		
 		if (!found)
@@ -297,16 +212,10 @@ public class Portfolio {
 		System.out.println("Running getGain().");
 		float gain = 0;
 		boolean found = false;
-		for (Stock stock : stonks) {	//go thorugh ever investement, calculate gain with current price
+		for (Investement i : inv) {	//go thorugh ever investement, calculate gain with current price
 			found = true;	//at least one investement found
-			float tempGain = stock.getPrice() * stock.getQuantity() - (float)9.99 - stock.getBookValue();
-			System.out.println("Gain for " + stock.getSymbol() + " " + stock.getName() + " is $" + String.format("%.2f",tempGain) + "."); //print gain for this particual investement
-			gain += tempGain; //add to overall gain
-		}
-		for (MutualFund mFund : mutualFunds) { //go thorugh ever investement, calculate gain with current price
-			found = true;	//at least one investement found
-			float tempGain = mFund.getPrice() * mFund.getQuantity() - 45 - mFund.getBookValue();
-			System.out.println("Gain for " + mFund.getSymbol() + " " + mFund.getName() + " is $" + String.format("%.2f",tempGain) + ".");	//display gain for this particular MF
+			float tempGain = i.getGain();
+			System.out.println("Gain for " + i.getSymbol() + " " + i.getName() + " is $" + String.format("%.2f",tempGain) + "."); //print gain for this particual investement
 			gain += tempGain; //add to overall gain
 		}
 		System.out.println("Overall gain: $" + String.format("%.2f", gain)); //total gain
@@ -402,14 +311,14 @@ public class Portfolio {
 			return;
 		}
 	
-		for (Stock stock : stonks) {	//go though every object
+		for (Investement i : inv) {	//go though every object
 			if (symbolExists){	//if symbol was entered, should be true, testing
-				if (!symbol.equals(stock.getSymbol())){
+				if (!symbol.equals(i.getSymbol())){
 					continue;	//if symbol doesn't match stock's symbol, go to condition check, object is discarded
 				}
 			}
 			if (nameExists) {	//name is not blank, checking
-				String[] stockNameSplit = stock.getName().split("[ ]+");
+				String[] stockNameSplit = i.getName().split("[ ]+");
 				boolean match = true;	//checks if a mismatch in the word was found "apple != appl"
 				for (String itemString : nameSplit) {
 					boolean found = false;	//if went through all the words, and no match was found
@@ -429,48 +338,13 @@ public class Portfolio {
 				}
 			}
 			if (priceRangeExists){//checks if the price of the stock is less than upperbound and larger than lower bound
-				if (Float.compare(stock.getPrice(), upperBound) == 1 || Float.compare(stock.getPrice(), lowerBound) == -1){	
+				if (Float.compare(i.getPrice(), upperBound) == 1 || Float.compare(i.getPrice(), lowerBound) == -1){	
 					continue; //if not, object is discarded
 				}
 			}
 			foundAtLeastOne = true;	//if object passed all search parameters, print out it's contents
-			System.out.println("Stock found matching \"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + "\": ");
-			System.out.println(stock.toString());
-		}
-		for (MutualFund mFund : mutualFunds) {	//same logic applies as to stock, refer to that for explanation
-			if (symbolExists){
-				if (!symbol.equals(mFund.getSymbol())){
-					continue;
-				}
-			}
-			if (nameExists) {
-				String[] stockNameSplit = mFund.getName().split("[ ]+");
-				boolean match = true;
-				for (String itemString : nameSplit) {
-					boolean found = false;
-					for (String string : stockNameSplit) {
-						if(itemString.equalsIgnoreCase(string)){
-							found = true;
-							break;
-						}
-					}
-					if (!found){
-						match = false;
-						break;
-					}
-				}
-				if (!match){
-					continue;
-				}
-			}
-			if (priceRangeExists){
-				if (Float.compare(mFund.getPrice(), upperBound) == 1 || Float.compare(mFund.getPrice(), lowerBound) == -1){
-					continue;
-				}
-			}
-			foundAtLeastOne = true;
-			System.out.println("Mutual Fund found matching \"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + ": ");
-			System.out.println(mFund.toString());
+			System.out.println("Investement found matching \"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + "\": ");
+			System.out.println(i.toString());
 		}
 		
 		if (!foundAtLeastOne){	//if every single object got discarded, print out error message
@@ -483,10 +357,7 @@ public class Portfolio {
 	 * Additional method. Goes through every investement, and displays it's contents.
 	 */
 	public void printAll() {	//goes through all investememnts, printing info
-		for (Stock i : stonks) {
-			System.out.println(i.toString() + "\n");
-		}
-		for (MutualFund i : mutualFunds) {
+		for (Investement i : inv) {
 			System.out.println(i.toString() + "\n");
 		}
 	}

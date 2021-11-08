@@ -11,6 +11,14 @@ public class Stock extends Investement{
 	public Stock(){
 		super();
 	}
+	
+	/**
+	 * takes user input for all values, and creates Stock object using them. assume no previous info was given. calculates bookValue as well
+	 * @param symbol		user input. will be used to set Stock.symbol
+	 * @param name			user input. will be used to set Stock.name
+	 * @param quantity		user input. will be used to set Stock.quanity. will be used to calculate bookValue
+	 * @param price			user input. will be used to set Stock.price. will be used to calculate bookValue
+	 */
 	public Stock(String name, String symbol, int quantity, float price) {
 		super(name, symbol, quantity, price);
 		setBookValue(quantity, price);
@@ -26,8 +34,15 @@ public class Stock extends Investement{
 		super.setBookValue(super.getBookValue() + (super.getPrice() * super.getQuantity() + (float)9.99)); //assuming value already exists (either as 0, or something else), will be adding to it
 	}
 
-	
+	@Override
+	public float getPayment(float price, int quantity){
+		return (price * quantity) - (float)9.99;
+	}
 
+	@Override
+	public float getGain(){
+		return super.getGain() - (float)9.99;
+	}
 
 	//toString
 	/**
@@ -36,25 +51,5 @@ public class Stock extends Investement{
 	 */
 	public String toString(){
 		return "Type: Stock\n" +  super.toString();
-	}
-
-	/**
-	 * changes book value and stonk quantity
-	 * @param quantity	new quantity to sub in
-	 */
-	public void sellBookValue(int quantity){
-		super.setBookValue(super.getBookValue() * ((float)quantity/super.getQuantity()));
-		super.setQuantity(quantity);	 					//update quantity
-	}
-
-	/**
-	 * takes parameters and updates the values. also calculates bookValue
-	 * @param quantity	provided by the user. also used in updating bookValue 
-	 * @param price		provided by the user. also used in updating bookValue
-	 */
-	public void updateBuy(int quantity, float price){
-		this.price = price;
-		this.quantity += quantity;
-		setBookValue(price, quantity);
 	}
 }
