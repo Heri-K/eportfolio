@@ -6,8 +6,7 @@ import java.util.Scanner;
  * Class contains methods to manipulate private arraylist variables, display them, and interacts with Stock and MutiualFund classes
  */
 public class Portfolio {
-	private ArrayList<Stock> stonks;
-	private ArrayList<MutualFund> mutualFunds;
+	private ArrayList<Investement> investements;
 	/**
 	 *  Class constructor. initializes the lists as instances. 
 	 */

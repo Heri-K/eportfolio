@@ -2,23 +2,14 @@ package ePortfolio;
 /**
  * Contains private variables, methods related to accessing/mutating said variables, method toString and some custom methods 
  */
-public class MutualFund {
-	private String name;
-	private String symbol;
-	private int quantity;
-	private float price;
-	private float bookValue = 0;
+public class MutualFund extends Investement{
 
 	//constructors
 	/**
 	 * Parameter-less constructor. sets string values to "NaN" and int/float values to 0
 	 */
 	public MutualFund(){
-		name = "NaN";
-		symbol = "NaN";
-		quantity = 0;
-		price = 0;
-		bookValue = 0;
+		
 	}
 	
 	/**
@@ -29,10 +20,7 @@ public class MutualFund {
 	 * @param price			user input. will be used to set MutualFund.price. will be used to calculate bookValue
 	 */
 	public MutualFund(String symbol, String name, int quantity, float price) {
-		this.name = name;
-		this.symbol = symbol;
-		this.quantity = quantity;
-		this.price = price;
+		super(name, symbol, quantity, price);
 		setBookValue(quantity, price);
 	}
 	
@@ -107,36 +95,10 @@ public class MutualFund {
 	 * @param price		user input for price to calculate bookValue with 
 	 * @param quantity	user input for quantity to calculate bookValue with 
 	 */
-	public void setBookValue(int quantity, float price){
-		this.bookValue += (quantity * price);	//assume that previous value is already there (0 or bookValue)
-	}
+
 
 	//toString
-	/**
-	 * takes all variables of the class, and returns their values in a string
-	 * @return string of all values combined into 1
-	 */
-	public String toString(){
-		return "Investment: " + symbol + "\nName: " + name + "\nPrice: " + price + "\nQuantity: " + quantity + "\nBook value: " + bookValue;
-	}
-
-	//equals
-	/**
-	 * takes parameters from Portfolio(most likley) and checks if they are exactly the same as this particular object. all parameters must be equal, then returns true, otherwise, false.
-	 * @param name		provded by user to check if this. is the same
-	 * @param symbol	provded by user to check if this. is the same
-	 * @param quantity	provded by user to check if this. is the same
-	 * @param price		provded by user to check if this. is the same
-	 * @param bookValue	provded by user to check if this. is the same
-	 * @return		//true or false
-	 */
-	public boolean equals(String name, String symbol, int quantity, float price, float bookValue){
-		return 	name.equals(this.name) &&
-				symbol.equals(this.symbol) &&
-				quantity == this.quantity &&
-				Float.compare(price, this.price) == 0 &&
-				Float.compare(bookValue, this.bookValue) == 0;
-	}
+	
 	
 	/**
 	 * adjusts book value and quanity of MF

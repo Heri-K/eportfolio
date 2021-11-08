@@ -12,7 +12,6 @@ public class Main {
 	 */
 	public static void main(String argv[]) {
 		Portfolio portfolio = new Portfolio();
-
 		Scanner keyboard = new Scanner(System.in);
 		String command = new String();
 		while (!command.strip().equalsIgnoreCase("quit") && !command.strip().equalsIgnoreCase("q")) {
