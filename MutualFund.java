@@ -25,6 +25,9 @@ public class MutualFund extends Investement{
 		setBookValue(quantity, price);
 	}
 	
+	public MutualFund(String name, String symbol, int quantity, float price, float bookValue) {
+		super(name, symbol, quantity, price, bookValue);
+	}
 
 	//toString
 	public String toString(){

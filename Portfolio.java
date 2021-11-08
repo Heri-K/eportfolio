@@ -384,17 +384,30 @@ public class Portfolio {
 
 	public void readFile(String filename){
 		File file = new File(filename);
-		Scanner readFile = null;
+		Scanner scanner = null;
+		String investement = "";
 
 		if(!file.exists()){
 			System.out.println("File " + filename + " does not exists. cannot read.");
 			return;
 		}
 		try {
-			readFile = new Scanner(new FileInputStream(filename));
+			scanner = new Scanner(new FileInputStream(filename));
 		} catch (Exception e) {
 			System.out.println("Cannot open file " + filename + ". Returning to main.");
 			return;
+		}
+
+		while (scanner.hasNextLine()) {
+			String temp = scanner.nextLine().trim();
+			if (!temp.isEmpty())
+				investement.concat(temp);
+			else{
+				String[] split = investement.split(" = \"|\"");
+				if (split.length == 0)
+					continue;
+				(split[1].equalsIgnoreCase("stock")) ? inv.add(new Stock(split[5], split[3], split[7], split[9], split[11])) : ;
+			}
 		}
 
 	}

@@ -26,6 +26,10 @@ public class Stock extends Investement{
 		setBookValue(quantity, price);
 	}
 
+	public Stock(String name, String symbol, int quantity, float price, float bookValue) {
+		super(name, symbol, quantity, price, bookValue);
+	}
+
 	/**
 	 * takes parameters and calculates local class bookValue based around it. adds calculated bookValue to pre-existing value (most likely 0)
 	 * @param price		user input for price to calculate bookValue with 
