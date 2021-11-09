@@ -24,23 +24,31 @@ public class MutualFund extends Investement{
 		super(name, symbol, quantity, price);
 		setBookValue(quantity, price);
 	}
-	
+	/**
+	 * constructor. uses predetrmined bookValue as well
+	 */
 	public MutualFund(String name, String symbol, int quantity, float price, float bookValue) {
 		super(name, symbol, quantity, price, bookValue);
 	}
 
-	//toString
+	/**
+	 * toString. adds type of investement as well as everything else.
+	 */
 	public String toString(){
 		return "Type: Mutual Fund\n" +  super.toString();
 	}
-	
-	@Override
-	public float getGain(){
-		return super.getGain() - 45;
-	}
-
+	/**
+	 * toFile. formatted for FileIO. adds type of investement as well
+	 */
 	@Override
 	public String toFile(){
 		return "type = \"mutualfund\"\n" + super.toFile();
+	}
+	/**
+	 * get gain is calculated differently. need to override
+	 */
+	@Override
+	public float getGain(){
+		return super.getGain() - 45;
 	}
 }

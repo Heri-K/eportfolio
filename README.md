@@ -11,16 +11,20 @@ Due Date: 18/10/2021
 The program is aimed at helping investors manage their portfolios. They can add stocks and mutual funds that interest them, buy and sell them, update their prices, and get overall gain from them. The program starts with a menu, and requests a user for the input. After function is done, program reprints the menu, until "quit" is called. 
 "Buy" menu function allows you to buy certain amount of stock and/or mutual fund at a specific price, and the program keeps track of it until program quits. 
 "Sell" prompts user for a symbol, quantity, and price, and then searches stock and mutualFunds lists for said symbol. If it finds said symbol, updates quantity, price and bookValue of said investement, and displays the payment recieved, alongside with overall gain from seeling said investement (even partially). If it does doesnt find the investemtn with said symbol, returns and error, and brings up the menu. 
-"Update" goes through every investement (both stock and mutual fund), displays current status of the investement (price and quantity), and prompts user to enter a new price. Displays updated information about the stock afterwards. If no investements were added, throws an error, and returns to the menu.
-"getGain" calculates gain for each individual investement (gain = payment - currBookValue = (quantity * price - comm) - currBookValue), and displays it per investement. After looping through both investement types lists, displays overall gain. If no investements were added to the lists, displays gain of 0, throws an error of "empty list, can't read", andreturns to the menu. 
-"search" prompts user for input on symbol, key words for the name, and price range. If input field was left blank, search condition is ignored. Program then goes through every element in investement lists, comparing if the element's contents match the search condition. If a mismatch is found (requested: APPS, currItem: AAPL), investement is discarded, and next one is searched. If the investement meets all search criteria, investement information is displayed, and next investement is searched. If no mathes were found or the lists are empty, throws an error and returns to the menu.
+"Update" goes through every investement list, displays current status of the investement (price and quantity), and prompts user to enter a new price. Displays updated information about the stock afterwards. If no investements were added, throws an error, and returns to the menu.
+"getGain" calculates gain for each individual investement (gain = payment - currBookValue = (quantity * price - comm) - currBookValue), and displays it per investement. After looping through investement list, displays overall gain. If no investements were added to the lists, displays gain of 0, throws an error of "empty list, can't read", andreturns to the menu. 
+"search" prompts user for input on symbol, key words for the name, and price range. If input field was left blank, search condition is ignored.
+Program then goesthough and checks for the name conditions. If the name condition was given, use hash map to find intersect of all given word indexes.
+Program then goes through every index in intersect of names in investement lists, comparing if the element's contents match the search condition. If a mismatch is found (requested: APPS, currItem: AAPL), investement is discarded, and next one is searched. If the investement meets all search criteria, investement information is displayed, and next investement is searched. If no mathes were found or the lists are empty, throws an error and returns to the menu.
 "printAll" goes through both investement lists, and prints their information.
 
 
 <-------------------------Limitations--------------------------> 
 
 One of the biggest current limitations is not being able to convert some strings to ints/float. For instance, input: 10a would throw an error as "invalid input" and not convert to "10".
-~~Another limitation is for_each loop for stocks goes before for_each loop for mutualFund. meaning, if by chance, stock and mutual fund have the same symbol (which they shouldn't, according to the prof), only stock would be detected, and not both. Some functions do not immediatly return after finding said element, such as getGain, and they function as intended, but function that do like Sell, will have some problems.~~ Fixed. 
+~~Another limitation is for_each loop for stocks goes before for_each loop for mutualFund. meaning, if by chance, stock and mutual fund have the same symbol (which they shouldn't, according to the prof), only stock would be detected, and not both. Some functions do not immediatly return after finding said element, such as getGain, and they function as intended, but function that do like Sell, will have some problems.~~ 
+
+Fixed. 
 
 
 <-------------------------Compiling and Running--------------------------> 
@@ -31,13 +35,17 @@ One of the biggest current limitations is not being able to convert some strings
 	ls: ePortfolio README.md javadocs.resources
 )
 
-  > javac ePortfolio/*.java \n
-  > java ePortfolio/Main
+  > javac ePortfolio/*.java
+  > java ePortfolio/Main invs.txt
+
+or
+  > make
 
 
 <-------------------------Test Plan (Outline)--------------------------> 
 Testplan outline for main()
 	Initializes Portfolio and Scanner objects to work with.
+	Loads contents of the requested file into investement list. 
 	Repeatedly calls for userInput to enter a menu option until "quit" is called. 
 	Available options are (case insensitive):
 		b, buy for "buy()"
@@ -48,6 +56,7 @@ Testplan outline for main()
 		p, print, printall for "printAll()"
 		q, quit to exit the loop and exit the program.
 	If the input is not one of the afformentioned commands, throws an error and re-asks for input.
+	Once quit is called, stores all current into the same file, overwriting it.
 
 Testplan for buy()
 	Asks user to enter the investement type (stock of mutual fund), and re-asks them until the answer is valid.
@@ -57,11 +66,11 @@ Testplan for buy()
 	Asks user for input on the symbol. If isBlank, asks user to re-enter the value until is valid. 
 	Asks the user for the quantity. if isBlank or not parse-able to int, re-ask user for input, until valid.
 	Asks user for price, if isBlank or is not parse-able, re-ask user for input until is valid. 
-	Depending on the investementType, call byStock() or buyMF();
-	(The only difference between the 2 is which list it gets added to)
-	Loops through the investenty type list, checking if the desired symbol exists. If so, modify the vallues accordingly. 
+	calls buyInv()
+	Loops through the investent type list, checking if the desired symbol exists. If so, modify the vallues accordingly. 
+	If the symbol exists, but the investement type doesn't match requested type (ie requested buy mutualFund, symbol exists as stock), throws error, and returns to main menu.
 	If not, promp the user for a name. if left blank, re-prompt until is valid. 
-	Add the newly constructed investement to the list.
+	Add the newly constructed investement to the list and add the name keys to the HashMap.
 
 Testplan for sell():
 	Prompts user for the symbol. If left blank, re-prompts for input until valid. 
@@ -69,15 +78,17 @@ Testplan for sell():
 	If so, prompts user for quantity and price to sell. If left blank or not parse-able, re-prompts user for input until valid. 
 	Displays payment recieved and overall gain for the sold stock. Updates investement quantity,price and bookvalue.
 	If the investemnet with a given symbol DNE, or list is empty, throws an error.
+	If investement is fully sold (quantity == 0), remove it from the investement list, and adjust keys in HashMap accordingly. 
 
 Testplan for update():
-	Loops through both investement lists, prompting user for input. If input is blank or is not parse-able, re-prompt until valid; 
+	Loops through both investement lists, prompting user for input. If input is not parse-able, re-prompt until valid; 
+	If input is blank, leave investment's price as is. 
 	Updates the price of the investement and displays the updated info. 
 	If list is empty, throws an error. 
 
 Testplan for getGain():
 	initializes a variable ouside the loops.
-	Loops through both lists, gettignthe info. Displays info. Calculates the gain for each individual investement, and displays it. Add said gain value4 to the variable outside the loop. 
+	Loops through the list,  getting the info. Displays info. Calculates the gain for each individual investement, and displays it. Add said gain value to the variable outside the loop. 
 	Once loops finish, displays overall gain for all investemetns.
 	If the lists are empty, shows gain of 0, and throws an error. 
 
@@ -97,7 +108,7 @@ Testplan outline for: search()
 	If symbolExists, nameExists, or priceRange exists were set to false, ignore that condition and search only via other ones. If a mismatch happens (i.e. symbol "AAPL" vs "APPL"), continue the loop, discarding that particular invetement, moving onto the next one. 
 	Mismatch can occur as: symbol != Investement.symbol, (price is larger than upper bound or price is lower than lower bound), or keyword is missing.
 	
-	While checking for a keyword, split the name of the stock into String array with regex " ". create nested for loop which goes "number of keywords" x "number of words in Name". If a match between keyword and term in name is found, set boolean termFound to true, and break inner loop. In outer loop check if said boolean is false. If not, continue the loop on next keyword. If boolean is indeed false, means keyworm wasn't matched to anything in the name, meaning tempName failed to be mentioned, meaning investement doesn't match.
+	While checking for keyword, narrow down possible investemnts. Create intersect of all key indexes, and store that index as an array list. Use said array list to check if other conditions are met. If the intersect result is empty, throws error of (no matches found).
 
 	If the investement wasn't discarded at any moment, means it passed all search conditions, means investement matches the requirement. display the stock information. 
 
@@ -109,11 +120,13 @@ Testplan outline for: search()
 
 One of the functions that can be improved upon is "sell". Right now, the program asks the user for the input on symbol, price and qunatity in the beggining, but only then checks if said symbol exists. It will still throw an error if the symbol doesn't exists, but it would be more efficent and more user-friendly to:
  - ask for symbol, check if investement with such symbol exists, if so, then aks for new price and quantity
- - if price is not given(field left blank), assume we are using same price as current
+~~ - if price is not given(field left blank), assume we are using same price as current~~ 
+Implemented
  - and, if the investement with a matching symbol is not found, throw an error, instead of aksing for more inputs and onlythen throwingan error
 
 Another function that can be improved on is "update". as of now, user needs to enter each price manually. My idea is:
- - if input field is left blank, keep the price as the original,
+~~ - if input field is left blank, keep the price as the original,~~
+Implemented
 
 Last function to improve on is "search". As of now, it only searches for the exact case-insenstitive matches, which includes punctuation. So, "apple" and "Apple" would be considered a match, but "Inc" and "Inc." not. 
  - Plan on implementing where the program ignores punctuation and checks the words, and hopefully "Inc" and "Inc." match.  
