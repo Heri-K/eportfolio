@@ -142,7 +142,7 @@ public class Portfolio {
 		symbol = symbol.strip();
 		for (Investement i : inv) {	//checking to see if stock exists
 			if (symbol.equalsIgnoreCase(i.getSymbol())){
-				System.out.print("Enter the quantity of " + symbol + " to sell: ");
+				System.out.print("Current quantity of " + i.getSymbol() + ":" + i.getQuantity() + ". Enter the quantity to sell: ");
 				while (true) {	//getting appropriate quantity
 					try {	//quanity as integer, not string
 						quantity = Integer.parseInt(keyboard.nextLine());
@@ -156,7 +156,7 @@ public class Portfolio {
 					}
 					break;
 				}
-				System.out.print("Enter the price: ");
+				System.out.print("Current price: " + i.getPrice() + ". Enter the price ");
 				while (true) {	//getting price
 					try {	//price as float, not string
 						price = Float.parseFloat(keyboard.nextLine());
@@ -197,14 +197,20 @@ public class Portfolio {
 		for (Investement i : inv) {
 			found = true;	//investement found
 			System.out.print("Current price of " + i.getSymbol() + " " + i.getName() + " is $" + 
-			String.format("%.2f", i.getPrice()) + ".\n" + "Enter the new price: ");	//current stats
+			String.format("%.2f", i.getPrice()) + ".\n" + "Enter the new price or leave blank to keep as is: ");	//current stats
 			float price;
+			String priceString;
 			while(true){	//getting valid price
+				priceString = keyboard.nextLine().trim();
 				try {
-					price = Float.parseFloat(keyboard.nextLine());
-				} catch (Exception e) {					//TODO blank input
-					System.out.print("Invalid price, try again. Enter the price: ");
-					continue;
+					price = Float.parseFloat(priceString);
+				} catch (Exception e) {
+					if (priceString.isEmpty() || priceString.isBlank())
+						price = i.getPrice();
+					else{
+						System.out.print("Invalid price, try again. Enter the price: ");
+						continue;
+					}
 				}
 				break;
 			}
@@ -223,7 +229,6 @@ public class Portfolio {
 		System.out.println("Running getGain().");
 		float gain = 0;
 		boolean found = false;
-		System.out.println(index);
 		for (Investement i : inv) {	//go thorugh ever investement, calculate gain with current price
 			found = true;	//at least one investement found
 			float tempGain = i.getGain();
@@ -258,7 +263,7 @@ public class Portfolio {
 		if (name.isEmpty() || name.isBlank())
 			nameExists = false; 
 		name = name.strip();
-		String[] nameSplit = name.split("[ ]+");	//split name into key *words*
+		String[] nameSplit = name.toLowerCase().split("[ ]+");	//split name into key *words*
 
 		System.out.print("Enter the range of prices to search for (blank is acceptable): ");	//fucky part begins
 		float lowerBound = Float.NEGATIVE_INFINITY;	//by default, lowe and upper bounds are set to neg/pos infinity respectively
@@ -322,45 +327,45 @@ public class Portfolio {
 			System.out.println("Cannot search with no search conditions. returning to main menu.");
 			return;
 		}
-	
-		for (Investement i : inv) {	//go though every object
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		for (int i = 0; i < inv.size(); i++) {
+			temp.add(i);
+		}
+
+		if (nameExists) {	//name is not blank, checking
+			for (int j = 0; j < nameSplit.length; j++) {
+				ArrayList<Integer> temp2 = index.get(nameSplit[j]);
+				System.out.println(temp2);
+				if (temp2 == null){
+					temp = new ArrayList<Integer>();
+					break;
+				}
+				temp.retainAll(index.get(nameSplit[j]));
+			}
+			if (temp.isEmpty()){
+				System.out.println("No matches found for: \"Symbol: " + symbol + "; Name: " + name + "; Price: " + lowerBound + "-" + upperBound + "\".");
+				return;
+			}
+		}
+		for (Integer i : temp) {	//go though every object
 			if (symbolExists){	//if symbol was entered, should be true, testing
-				if (!symbol.equals(i.getSymbol())){
+				if (!symbol.equals(inv.get(i).getSymbol())){
 					continue;	//if symbol doesn't match stock's symbol, go to condition check, object is discarded
 				}
 			}
-			if (nameExists) {	//name is not blank, checking
-				String[] stockNameSplit = i.getName().split("[ ]+");
-				boolean match = true;	//checks if a mismatch in the word was found "apple != appl"
-				for (String itemString : nameSplit) {
-					boolean found = false;	//if went through all the words, and no match was found
-					for (String string : stockNameSplit) {
-						if(itemString.equalsIgnoreCase(string)){	//compares every word
-							found = true;	//if found, ticking time bomnb wont go off
-							break;
-						}
-					}
-					if (!found){	//no match in the name was found, then word we're searching for isn't there, therefore, no match. discard
-						match = false;
-						break;
-					}
-				}
-				if (!match){
-					continue;
-				}
-			}
+			
 			if (priceRangeExists){//checks if the price of the stock is less than upperbound and larger than lower bound
-				if (Float.compare(i.getPrice(), upperBound) == 1 || Float.compare(i.getPrice(), lowerBound) == -1){	
+				if (Float.compare(inv.get(i).getPrice(), upperBound) == 1 || Float.compare(inv.get(i).getPrice(), lowerBound) == -1){	
 					continue; //if not, object is discarded
 				}
 			}
 			foundAtLeastOne = true;	//if object passed all search parameters, print out it's contents
-			System.out.println("Investement found matching \"Symbol: " + symbol + ", Name: " + name + ", Price: " + lowerBound + "-" + upperBound + "\": ");
-			System.out.println(i.toString());
+			System.out.println("Investement found matching \"" + ((symbolExists) ? "Symbol: " + symbol + "; " : "" ) + ((nameExists) ? "Name: " + name + "; " : "") + ((priceRangeExists) ? "Price: " + lowerBound + "-" + upperBound  : "" )+"\": ");
+			System.out.println(inv.get(i).toString() + "\n");
 		}
 		
 		if (!foundAtLeastOne){	//if every single object got discarded, print out error message
-			System.out.println(" No matches found for:\"Symbol: " + symbol + "; Name: " + name + " Price: " + lowerBound + "-" + upperBound + "\".");
+			System.out.println(" No matches found for: \"Symbol: " + symbol + "; Name: " + name + " Price: " + lowerBound + "-" + upperBound + "\".");
 		}
 
 	}
@@ -431,7 +436,6 @@ public class Portfolio {
 				temp = new ArrayList<Integer>();
 			}
 			temp.add(i);
-			System.out.println(temp);
 			index.putIfAbsent(el, temp);
 			index.replace(el, temp);
 		}
