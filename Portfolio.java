@@ -8,16 +8,19 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.File;
+import java.util.HashMap;
 /**
  * Class contains methods to manipulate private arraylist variables, display them, and interacts with Stock and MutiualFund classes
  */
 public class Portfolio {
 	private ArrayList<Investement> inv;
+	private HashMap<String, ArrayList<Integer>> index;
 	/**
 	 *  Class constructor. initializes the lists as instances. 
 	 */
 	public Portfolio(){
 		inv = new ArrayList<Investement>();
+		index = new HashMap<String, ArrayList<Integer>>();
 	}
 
 	/**
@@ -112,10 +115,11 @@ public class Portfolio {
 		invName = invName.strip(); //no name whitespace
 
 		inv.add(((type == 's') ? new Stock(invName, symbol, quantity, price) : new MutualFund(invName, symbol, quantity, price)));	//creating new stock
+		hashAdd(invName, inv.size() - 1);		
 		System.out.println("Bought " + symbol + " " + invName + ": " + 
 		quantity + " shares for $" + String.format("%.2f", price) + " each. Total Book Value is: $" + String.format("%.2f", (price * quantity + 9.99)));
 	}
-	
+
 	/**
 	 * Promts user for a symbol. uses that symbol to verify investement exists. if so, sells of said investement, displaying payment and gain. Also modifies stock price, quantity, and book value as needed. If symbol's investement doesn't exist, print out error message
 	 * @param keyboard passed by reference. Used for user input for symbol, price and quantity
@@ -147,7 +151,7 @@ public class Portfolio {
 						continue;
 					}	//making sure quaninty is not larger than what we have, and not <= 0
 					if (quantity > i.getQuantity() || quantity <= 0){ //proper range
-						System.out.print("Value outside the range, try again. Enter the Quantity");
+						System.out.print("Value outside the range, try again. Enter the Quantity: ");
 						continue;
 					}
 					break;
@@ -169,6 +173,7 @@ public class Portfolio {
 				System.out.println("Successfully sold " + quantity + " of " + symbol + " " + i.getName() + " for " + price + " each.");
 				System.out.println("Total payment: $" + payment + ", with net gain of $" + String.format("%.2f", gain) + ".");
 				if (i.getQuantity() == 0){ //if quaninty 0, we don't have anymore stock, no need to keep track of it
+					hashDelete(i.getName(), inv.indexOf(i));
 					inv.remove(i);
 					return;
 				}
@@ -218,6 +223,7 @@ public class Portfolio {
 		System.out.println("Running getGain().");
 		float gain = 0;
 		boolean found = false;
+		System.out.println(index);
 		for (Investement i : inv) {	//go thorugh ever investement, calculate gain with current price
 			found = true;	//at least one investement found
 			float tempGain = i.getGain();
@@ -400,15 +406,54 @@ public class Portfolio {
 
 		while (scanner.hasNextLine()) {
 			String temp = scanner.nextLine().trim();
-			if (!temp.isEmpty())
-				investement.concat(temp);
+			if (!temp.isBlank()){
+				investement = investement.concat(temp);
+			}
 			else{
 				String[] split = investement.split(" = \"|\"");
 				if (split.length == 0)
 					continue;
-				(split[1].equalsIgnoreCase("stock")) ? inv.add(new Stock(split[5], split[3], split[7], split[9], split[11])) : ;
-			}
+				inv.add((split[1].equalsIgnoreCase("stock")) ? 
+				(new Stock(split[5], split[3], Integer.parseInt(split[7]), Float.parseFloat(split[9]), Float.parseFloat(split[11]))) : 
+				new MutualFund(split[5], split[3], Integer.parseInt(split[7]), Float.parseFloat(split[9]), Float.parseFloat(split[11])));
+				hashAdd(split[5], inv.size() - 1);
+				investement = "";
+				}
 		}
 
+	}
+
+	private void hashAdd(String invName, int i) {
+		String[] split = invName.toLowerCase().split("[ ]+");
+		for (String el : split) {
+			ArrayList<Integer> temp = index.get(el);
+			if (temp == null){
+				temp = new ArrayList<Integer>();
+			}
+			temp.add(i);
+			System.out.println(temp);
+			index.putIfAbsent(el, temp);
+			index.replace(el, temp);
+		}
+	}
+
+	private void hashDelete(String name, int ind) {
+		String[] split = name.toLowerCase().split("[ ]+");
+		for (String i : index.keySet()) {
+			ArrayList<Integer> temp = index.get(i);
+			for (int j = 0; j < temp.size(); j++) {
+				System.out.println(i + " " + j + "  " + ind);
+				if (temp.get(j) == ind)
+					temp.remove(temp.get(j--));
+				else if (temp.get(j) > ind)
+					temp.set(temp.indexOf(temp.get(j)), temp.get(j)-1);
+			}
+			index.replace(i, temp);
+		}
+		for (String i : split) {
+			ArrayList<Integer> temp = index.get(i);
+			if (temp.isEmpty())
+				index.remove(i);
+		}
 	}
 }
