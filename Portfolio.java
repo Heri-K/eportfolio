@@ -64,6 +64,10 @@ public class Portfolio {
 				System.out.print("Invalid input. Try again. Enter the quantity to buy: ");
 				continue;	//still loop, still validation until proper
 			}
+			if (quantity < 0){
+				System.out.println("Quantity has to be a positive value. Try again: ");
+				continue;
+			}
 			break;
 		}
 		float price;
@@ -73,6 +77,10 @@ public class Portfolio {
 				price = Float.parseFloat(keyboard.nextLine());
 			} catch (Exception e) {
 				System.out.print("Invalid price. Try again. Enter the price of the investement to buy: ");	
+				continue;
+			}
+			if (price < 0){
+				System.out.println("Price has to be positive. Try again: ");
 				continue;
 			}
 			break;
@@ -91,12 +99,14 @@ public class Portfolio {
 	public void buyInv(Scanner keyboard, String symbol, int quantity, float price, char type) {
 		for (Investement i : inv) {	//goes through every inv object, checking there will be no duplicates
 			if (symbol.equalsIgnoreCase(i.getSymbol())) {	//duplicate found, update quantity, price, bookvalue
+				if ((i instanceof Stock && type != 's') || (i instanceof MutualFund && type == 's')){
+					System.out.println("Symbol already exists as " + ((type == 's') ? "stock" : "mutual fund") + ". Cannot buy. Returning to main menu.");
+					return;
+				}	
 				i.updateBuy(quantity, price);
 				System.out.println("Bought " + symbol + " " + i.getName() + ": " + 
 				quantity + " shares for " + String.format("%.2f", price) + " each. Total Book Value is: " + String.format("%.2f", i.getBookValue()));	//prtint the output, and return
 				return;
-							// TODO check if more than 1 symbol exists
-							//if does, check if type matches
 			}
 		}
 		if (type == 's')
@@ -164,6 +174,10 @@ public class Portfolio {
 						System.out.print("Invalid price, try again. Enter the price: ");
 						continue;
 					}
+					if (price < 0){
+						System.out.println("Price has to be positive. Try again: ");
+						continue;
+					}
 					break;
 				}
 				payment = i.getPayment(price, quantity);	//payment as to how much user "recieves"
@@ -211,6 +225,10 @@ public class Portfolio {
 						System.out.print("Invalid price, try again. Enter the price: ");
 						continue;
 					}
+				}
+				if (price < 0){
+					System.out.println("Price has to be positive. Try again: ");
+					continue;
 				}
 				break;
 			}
@@ -266,7 +284,7 @@ public class Portfolio {
 		String[] nameSplit = name.toLowerCase().split("[ ]+");	//split name into key *words*
 
 		System.out.print("Enter the range of prices to search for (blank is acceptable): ");	//fucky part begins
-		float lowerBound = Float.NEGATIVE_INFINITY;	//by default, lowe and upper bounds are set to neg/pos infinity respectively
+		float lowerBound = (float)0.01;	//by default, lowe and upper bounds are set to neg/pos infinity respectively
 		float upperBound = Float.POSITIVE_INFINITY;
 		while(true){
 			String priceRangeRaw = keyboard.nextLine();
@@ -284,6 +302,10 @@ public class Portfolio {
 					System.out.print("Invalid price input, try again. Enter the price range: ");
 					continue;
 				}
+				if (lowerBound < 0){
+					System.out.println("Price has to be positive. Try again: ");
+					continue;
+				}
 				upperBound = lowerBound;	//exact value == lowerbound = upperbound
 				break;	//exit loop, needed information gathered
 			}
@@ -298,6 +320,10 @@ public class Portfolio {
 					System.out.print("Invalid upper bound, try again. Enter the price range: ");	
 					continue;
 				}
+				if (upperBound < 0){
+					System.out.println("Upper bound has to be positive. Try again: ");
+					continue;
+				}
 				break; //info gathered, exit the loop
 			}
 			else if (dashIndex == (priceRangeRaw.length()-1)){	//dash is at the las position (form of "number-")
@@ -305,6 +331,10 @@ public class Portfolio {
 					lowerBound = Float.parseFloat(priceRangeRaw.substring(0, dashIndex));	//parse to float substring from index 0 to right before '-'
 				} catch (Exception e) {
 					System.out.print("Invalid lower bound, try again. Enter the price range: ");
+					continue;
+				}
+				if (lowerBound < 0){
+					System.out.println("Lower bound has to be positive. Try again: ");
 					continue;
 				}
 				break; //info gathered, exit loop
@@ -315,6 +345,14 @@ public class Portfolio {
 					upperBound = Float.parseFloat(priceRangeRaw.substring(dashIndex+1, priceRangeRaw.length()));
 				} catch (Exception e) {
 					System.out.print("Invalid bounds, try again. Enter the price range: ");
+					continue;
+				}
+				if (lowerBound < 0){
+					System.out.println("Lower bound has to be positive. Try again: ");
+					continue;
+				}
+				if (upperBound < 0){
+					System.out.println("Upper bound has to be positive. Try again: ");
 					continue;
 				}
 			}
@@ -349,7 +387,7 @@ public class Portfolio {
 		}
 		for (Integer i : temp) {	//go though every object
 			if (symbolExists){	//if symbol was entered, should be true, testing
-				if (!symbol.equals(inv.get(i).getSymbol())){
+				if (!symbol.equalsIgnoreCase(inv.get(i).getSymbol())){
 					continue;	//if symbol doesn't match stock's symbol, go to condition check, object is discarded
 				}
 			}

@@ -20,7 +20,7 @@ The program is aimed at helping investors manage their portfolios. They can add 
 <-------------------------Limitations--------------------------> 
 
 One of the biggest current limitations is not being able to convert some strings to ints/float. For instance, input: 10a would throw an error as "invalid input" and not convert to "10".
-Another limitation is for_each loop for stocks goes before for_each loop for mutualFund. meaning, if by chance, stock and mutual fund have the same symbol (which they shouldn't, according to the prof), only stock would be detected, and not both. Some functions do not immediatly return after finding said element, such as getGain, and they function as intended, but function that do like Sell, will have some problems.
+~~Another limitation is for_each loop for stocks goes before for_each loop for mutualFund. meaning, if by chance, stock and mutual fund have the same symbol (which they shouldn't, according to the prof), only stock would be detected, and not both. Some functions do not immediatly return after finding said element, such as getGain, and they function as intended, but function that do like Sell, will have some problems.~~
 
 
 <-------------------------Compiling and Running--------------------------> 
